@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coach - Workout Builder</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
+    margin: 0;
+    padding: 20px;
+  }
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  .card h2 {
+    margin-top: 0;
+    color: #111827;
+  }
+  .form-group {
+    margin-bottom: 16px;
+  }
+  .form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: #374151;
+  }
+  .form-group input, .form-group select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+  }
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .form-row-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+  }
+  .btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  .btn-primary {
+    background: #2563eb;
+    color: white;
+  }
+  .btn-primary:hover {
+    background: #1d4ed8;
+  }
+  .btn-success {
+    background: #15803d;
+    color: white;
+  }
+  .btn-success:hover {
+    background: #166534;
+  }
+  .btn-danger {
+    background: #dc2626;
+    color: white;
+  }
+  .btn-danger:hover {
+    background: #b91c1c;
+  }
+  .btn-warning {
+    background: #f59e0b;
+    color: white;
+  }
+  .btn-warning:hover {
+    background: #d97706;
+  }
+  .message {
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 12px;
+    display: none;
+  }
+  .message.success {
+    display: block;
+    background: #d1fae5;
+    color: #065f46;
+  }
+  .message.error {
+    display: block;
+    background: #fee2e2;
+    color: #991b1b;
+  }
+  .section-title {
+    background: #111827;
+    color: white;
+    padding: 12px 16px;
+    border-radius: 8px 8px 0 0;
+    margin: 0 -24px 16px -24px;
+    padding-left: 24px;
+  }
+  .workout-list {
+    margin-top: 16px;
+  }
+  .workout-item {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 12px;
+    padding: 12px;
+    border-bottom: 1px solid #e5e7eb;
+    align-items: center;
+  }
+  .workout-item .info {
+    font-size: 14px;
+  }
+  .workout-item .info strong {
+    color: #111827;
+  }
+  .workout-item .actions {
+    display: flex;
+    gap: 8px;
+  }
+  .btn-sm {
+    padding: 6px 12px;
+    font-size: 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .btn-sm.edit {
+    background: #dbeafe;
+    color: #1e40af;
+  }
+  .btn-sm.delete {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+  .setup-hint {
+    background: #fef3c7;
+    border-left: 4px solid #f59e0b;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+  }
+  .table-container {
+    overflow-x: auto;
+    margin-top: 16px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  th {
+    background: #f3f4f6;
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #e5e7eb;
+  }
+  td {
+    padding: 10px;
+    border: 1px solid #e5e7eb;
+  }
+  @media (max-width: 600px) {
+    .form-row, .form-row-3 {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>👨‍🏫 Coach - Workout Builder</h1>
+  <p>Create and manage workout plans for your clients</p>
+
+  <div class="card">
+    <div class="section-title">
+      <h2 style="margin:0;color:white;">🔧 Setup</h2>
+    </div>
+    <div class="setup-hint">
+      <strong>Google Sheet Structure (Single Sheet):</strong><br>
+      Create a sheet named <strong>"WorkoutData"</strong> with these columns:<br>
+      <code>Username | Week | Day | Major | Exercise | Arabic | Muscle | Sets | Reps | Rest</code>
+    </div>
+    <div class="form-group">
+      <label>Google Apps Script Web App URL</label>
+      <input type="text" id="apiUrl" placeholder="https://script.google.com/macros/s/AKfycbzOWHoUbehvQPHlzYRLHVabtkKzykbO6v6OHfu08hNQHCZ96ZPGd6mZ3STUDYVE-1OuYA/exec" style="width:100%;padding:10px;border:1px solid #d1d5db;border-radius:8px;">
+      <small style="color:#6b7280;">Deploy your script and paste the URL here</small>
+    </div>
+    <button class="btn btn-primary" onclick="loadUsers()">📥 Load Users</button>
+    <div id="userList" style="margin-top:12px;"></div>
+  </div>
+
+  <div class="card">
+    <div class="section-title">
+      <h2 style="margin:0;color:white;">📝 Add/Edit Exercise</h2>
+    </div>
+    
+    <div class="form-row">
+      <div class="form-group">
+        <label>Username *</label>
+        <input type="text" id="username" placeholder="e.g., john_doe">
+      </div>
+      <div class="form-group">
+        <label>Week *</label>
+        <input type="text" id="week" placeholder="e.g., Week 1">
+      </div>
+    </div>
+    
+    <div class="form-row">
+      <div class="form-group">
+        <label>Day *</label>
+        <input type="text" id="day" placeholder="e.g., Day 1, Monday">
+      </div>
+      <div class="form-group">
+        <label>Major / Workout Name</label>
+        <input type="text" id="major" placeholder="e.g., Upper A - Chest Focus">
+      </div>
+    </div>
+    
+    <div class="form-row">
+      <div class="form-group">
+        <label>Exercise (English) *</label>
+        <input type="text" id="exercise" placeholder="e.g., Incline Barbell Chest Press">
+      </div>
+      <div class="form-group">
+        <label>Exercise (Arabic)</label>
+        <input type="text" id="arabic" placeholder="e.g., بنش مائل بالبار">
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label>Target Muscle</label>
+      <input type="text" id="muscle" placeholder="e.g., الصدر العلوي">
+    </div>
+    
+    <div class="form-row-3">
+      <div class="form-group">
+        <label>Sets</label>
+        <input type="text" id="sets" placeholder="3">
+      </div>
+      <div class="form-group">
+        <label>Reps</label>
+        <input type="text" id="reps" placeholder="6-8">
+      </div>
+      <div class="form-group">
+        <label>Rest</label>
+        <input type="text" id="rest" placeholder="2.5-3 دقائق">
+      </div>
+    </div>
+    
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+      <button class="btn btn-success" onclick="addWorkout()">➕ Add/Update Exercise</button>
+      <button class="btn btn-danger" onclick="deleteWorkout()">🗑️ Delete Exercise</button>
+      <button class="btn btn-warning" onclick="clearForm()">🔄 Clear Form</button>
+    </div>
+    <div id="addMessage" class="message"></div>
+  </div>
+
+  <div class="card">
+    <div class="section-title">
+      <h2 style="margin:0;color:white;">📋 View Workout Plan</h2>
+    </div>
+    <div class="form-group">
+      <label>Select Username to View</label>
+      <div style="display:flex; gap:10px;">
+        <input type="text" id="viewUsername" placeholder="Enter username" style="flex:1;padding:10px;border:1px solid #d1d5db;border-radius:8px;">
+        <button class="btn btn-primary" onclick="viewWorkout()">👁️ View</button>
+      </div>
+    </div>
+    <div id="viewContent"></div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// CONFIGURATION
+// ============================================================
+const STORAGE_KEY = 'coach_api_url';
+
+// Load saved API URL
+const savedUrl = localStorage.getItem(STORAGE_KEY);
+if (savedUrl) {
+  document.getElementById('apiUrl').value = savedUrl;
+}
+
+document.getElementById('apiUrl').addEventListener('change', function() {
+  localStorage.setItem(STORAGE_KEY, this.value);
+});
+
+// ============================================================
+// API CALLS
+// ============================================================
+async function callApi(action, data = {}) {
+  const url = document.getElementById('apiUrl').value.trim();
+  if (!url) {
+    showMessage('addMessage', 'Please enter your Google Apps Script URL', 'error');
+    return null;
+  }
+  
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ action, ...data })
+    });
+    
+    const result = await response.json();
+    return result;
+  } catch (error) {
+    showMessage('addMessage', '❌ Error: ' + error.message, 'error');
+    return null;
+  }
+}
+
+// ============================================================
+// LOAD USERS
+// ============================================================
+async function loadUsers() {
+  const result = await callApi('getUsers');
+  if (result && result.status === 'success') {
+    const userList = document.getElementById('userList');
+    if (result.users && result.users.length > 0) {
+      userList.innerHTML = `
+        <strong>Users:</strong> ${result.users.map(u => 
+          `<span style="display:inline-block;background:#dbeafe;padding:4px 12px;border-radius:12px;margin:4px;">${u}</span>`
+        ).join(' ')}
+      `;
+    } else {
+      userList.innerHTML = '<p style="color:#6b7280;">No users found. Add your first workout!</p>';
+    }
+  }
+}
+
+// ============================================================
+// ADD/UPDATE WORKOUT
+// ============================================================
+async function addWorkout() {
+  const data = {
+    username: document.getElementById('username').value.trim(),
+    week: document.getElementById('week').value.trim(),
+    day: document.getElementById('day').value.trim(),
+    major: document.getElementById('major').value.trim(),
+    exercise: document.getElementById('exercise').value.trim(),
+    arabic: document.getElementById('arabic').value.trim(),
+    muscle: document.getElementById('muscle').value.trim(),
+    sets: document.getElementById('sets').value.trim(),
+    reps: document.getElementById('reps').value.trim(),
+    rest: document.getElementById('rest').value.trim()
+  };
+  
+  if (!data.username || !data.week || !data.day || !data.exercise) {
+    showMessage('addMessage', 'Please fill in Username, Week, Day, and Exercise', 'error');
+    return;
+  }
+  
+  const result = await callApi('addWorkout', data);
+  if (result && result.status === 'success') {
+    showMessage('addMessage', '✅ ' + result.message, 'success');
+    loadUsers();
+    // Optionally clear form
+    // clearForm();
+  }
+}
+
+// ============================================================
+// DELETE WORKOUT
+// ============================================================
+async function deleteWorkout() {
+  const data = {
+    username: document.getElementById('username').value.trim(),
+    week: document.getElementById('week').value.trim(),
+    day: document.getElementById('day').value.trim(),
+    exercise: document.getElementById('exercise').value.trim()
+  };
+  
+  if (!data.username || !data.week || !data.day || !data.exercise) {
+    showMessage('addMessage', 'Please fill in Username, Week, Day, and Exercise to delete', 'error');
+    return;
+  }
+  
+  if (!confirm(`Delete "${data.exercise}" for ${data.username}?`)) return;
+  
+  const result = await callApi('deleteWorkout', data);
+  if (result && result.status === 'success') {
+    showMessage('addMessage', '✅ ' + result.message, 'success');
+    loadUsers();
+  }
+}
+
+// ============================================================
+// VIEW WORKOUT
+// ============================================================
+async function viewWorkout() {
+  const username = document.getElementById('viewUsername').value.trim();
+  if (!username) {
+    showMessage('addMessage', 'Please enter a username', 'error');
+    return;
+  }
+  
+  const result = await callApi('getWorkoutData', { username });
+  if (result && result.status === 'success') {
+    const container = document.getElementById('viewContent');
+    
+    if (!result.sections || result.sections.length === 0) {
+      container.innerHTML = '<p style="color:#6b7280;">No workout data found for this user</p>';
+      return;
+    }
+    
+    let html = '<div class="table-container"><table>';
+    html += '<tr><th>Week</th><th>Day</th><th>Major</th><th>Exercise</th><th>Arabic</th><th>Muscle</th><th>Sets</th><th>Reps</th><th>Rest</th></tr>';
+    
+    // We need to get the raw data - let's make another call
+    // For now, display sections
+    result.sections.forEach(section => {
+      section.exercises.forEach(ex => {
+        html += `<tr>
+          <td>${ex.week || ''}</td>
+          <td>${section.title}</td>
+          <td>${ex.major || ''}</td>
+          <td>${ex.eng}</td>
+          <td>${ex.arb || ''}</td>
+          <td>${ex.muscle || ''}</td>
+          <td>${ex.sets || ''}</td>
+          <td>${ex.reps || ''}</td>
+          <td>${ex.rest || ''}</td>
+        </tr>`;
+      });
+    });
+    
+    html += '</table></div>';
+    container.innerHTML = html;
+    
+    showMessage('addMessage', `✅ Loaded workout plan for ${username}`, 'success');
+  }
+}
+
+// ============================================================
+// CLEAR FORM
+// ============================================================
+function clearForm() {
+  document.getElementById('username').value = '';
+  document.getElementById('week').value = '';
+  document.getElementById('day').value = '';
+  document.getElementById('major').value = '';
+  document.getElementById('exercise').value = '';
+  document.getElementById('arabic').value = '';
+  document.getElementById('muscle').value = '';
+  document.getElementById('sets').value = '';
+  document.getElementById('reps').value = '';
+  document.getElementById('rest').value = '';
+}
+
+// ============================================================
+// SHOW MESSAGE
+// ============================================================
+function showMessage(elementId, text, type) {
+  const el = document.getElementById(elementId);
+  el.textContent = text;
+  el.className = 'message ' + type;
+  el.style.display = 'block';
+  
+  setTimeout(() => {
+    el.style.display = 'none';
+  }, 5000);
+}
+
+// Load users on page load
+window.onload = function() {
+  if (document.getElementById('apiUrl').value.trim()) {
+    loadUsers();
+  }
+};
+</script>
+
+</body>
+</html>
