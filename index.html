@@ -1,452 +1,937 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
+
 <head>
+
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Coach - Workout Builder</title>
-<!-- Simple Dumbbell Favicon -->
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect x='10' y='35' width='80' height='30' rx='5' fill='%23333'/><rect x='0' y='25' width='20' height='50' rx='5' fill='%23555'/><rect x='80' y='25' width='20' height='50' rx='5' fill='%23555'/></svg>">
+
+<!-- Excel Reader -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+
 <style>
-  * { box-sizing: border-box; }
-  body {
-    font-family: Arial, sans-serif;
-    background: #f4f6f8;
-    margin: 0;
-    padding: 20px;
-  }
-  .container {
-    max-width: 900px;
-    margin: 0 auto;
-  }
-  .card {
-    background: white;
-    border-radius: 12px;
-    padding: 24px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  }
-  .card h2 {
-    margin-top: 0;
-    color: #111827;
-  }
-  .form-group {
-    margin-bottom: 16px;
-  }
-  .form-group label {
-    display: block;
-    font-weight: 600;
-    margin-bottom: 4px;
-    color: #374151;
-  }
-  .form-group input, .form-group select {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    font-size: 14px;
-    background: white;
-  }
-  .form-group select {
-    cursor: pointer;
-  }
-  .form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-  }
+
+* {
+  box-sizing: border-box;
+}
+
+
+body {
+
+  font-family: Arial, sans-serif;
+
+  background: #f4f6f8;
+
+  margin: 0;
+
+  padding: 20px;
+
+}
+
+
+.container {
+
+  max-width: 1100px;
+
+  margin: 0 auto;
+
+}
+
+
+.card {
+
+  background: white;
+
+  border-radius: 12px;
+
+  padding: 24px;
+
+  margin-bottom: 20px;
+
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+
+}
+
+
+.card h2 {
+
+  margin-top: 0;
+
+  color: #111827;
+
+}
+
+
+.form-group {
+
+  margin-bottom: 16px;
+
+}
+
+
+.form-group label {
+
+  display: block;
+
+  font-weight: 600;
+
+  margin-bottom: 4px;
+
+  color: #374151;
+
+}
+
+
+.form-group input,
+.form-group select {
+
+  width: 100%;
+
+  padding: 10px;
+
+  border: 1px solid #d1d5db;
+
+  border-radius: 8px;
+
+  font-size: 14px;
+
+}
+
+
+.form-row {
+
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  gap: 16px;
+
+}
+
+
+.form-row-3 {
+
+  display: grid;
+
+  grid-template-columns: 1fr 1fr 1fr;
+
+  gap: 16px;
+
+}
+
+
+.btn {
+
+  padding: 12px 24px;
+
+  border: none;
+
+  border-radius: 8px;
+
+  font-size: 16px;
+
+  font-weight: bold;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+
+}
+
+
+.btn-primary {
+
+  background: #2563eb;
+
+  color: white;
+
+}
+
+
+.btn-primary:hover {
+
+  background: #1d4ed8;
+
+}
+
+
+.btn-success {
+
+  background: #15803d;
+
+  color: white;
+
+}
+
+
+.btn-success:hover {
+
+  background: #166534;
+
+}
+
+
+.btn-danger {
+
+  background: #dc2626;
+
+  color: white;
+
+}
+
+
+.btn-danger:hover {
+
+  background: #b91c1c;
+
+}
+
+
+.btn-warning {
+
+  background: #f59e0b;
+
+  color: white;
+
+}
+
+
+.btn-warning:hover {
+
+  background: #d97706;
+
+}
+
+
+.message {
+
+  padding: 12px;
+
+  border-radius: 8px;
+
+  margin-top: 12px;
+
+  display: none;
+
+}
+
+
+.message.success {
+
+  display: block;
+
+  background: #d1fae5;
+
+  color: #065f46;
+
+}
+
+
+.message.error {
+
+  display: block;
+
+  background: #fee2e2;
+
+  color: #991b1b;
+
+}
+
+
+.section-title {
+
+  background: #111827;
+
+  color: white;
+
+  padding: 12px 16px;
+
+  border-radius: 8px 8px 0 0;
+
+  margin: 0 -24px 16px -24px;
+
+  padding-left: 24px;
+
+}
+
+
+.setup-hint {
+
+  background: #fef3c7;
+
+  border-left: 4px solid #f59e0b;
+
+  padding: 12px 16px;
+
+  border-radius: 8px;
+
+  margin-bottom: 16px;
+
+  line-height: 1.6;
+
+}
+
+
+.table-container {
+
+  overflow-x: auto;
+
+  margin-top: 16px;
+
+}
+
+
+table {
+
+  width: 100%;
+
+  border-collapse: collapse;
+
+  font-size: 14px;
+
+}
+
+
+th {
+
+  background: #f3f4f6;
+
+  padding: 10px;
+
+  text-align: left;
+
+  border: 1px solid #e5e7eb;
+
+  white-space: nowrap;
+
+}
+
+
+td {
+
+  padding: 10px;
+
+  border: 1px solid #e5e7eb;
+
+}
+
+
+.import-summary {
+
+  margin-top: 16px;
+
+  padding: 15px;
+
+  background: #eff6ff;
+
+  border-radius: 8px;
+
+  display: none;
+
+}
+
+
+@media (max-width: 600px) {
+
+  .form-row,
   .form-row-3 {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 16px;
+
+    grid-template-columns: 1fr;
+
   }
-  .btn {
-    padding: 12px 24px;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.2s;
-  }
-  .btn-primary {
-    background: #2563eb;
-    color: white;
-  }
-  .btn-primary:hover {
-    background: #1d4ed8;
-  }
-  .btn-success {
-    background: #15803d;
-    color: white;
-  }
-  .btn-success:hover {
-    background: #166534;
-  }
-  .btn-danger {
-    background: #dc2626;
-    color: white;
-  }
-  .btn-danger:hover {
-    background: #b91c1c;
-  }
-  .btn-warning {
-    background: #f59e0b;
-    color: white;
-  }
-  .btn-warning:hover {
-    background: #d97706;
-  }
-  .btn-secondary {
-    background: #6b7280;
-    color: white;
-  }
-  .btn-secondary:hover {
-    background: #4b5563;
-  }
-  .btn-sm {
-    padding: 6px 12px;
-    font-size: 12px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-  }
-  .btn-sm.edit {
-    background: #dbeafe;
-    color: #1e40af;
-  }
-  .btn-sm.delete {
-    background: #fee2e2;
-    color: #991b1b;
-  }
-  .message {
-    padding: 12px;
-    border-radius: 8px;
-    margin-top: 12px;
-    display: none;
-  }
-  .message.success {
-    display: block;
-    background: #d1fae5;
-    color: #065f46;
-  }
-  .message.error {
-    display: block;
-    background: #fee2e2;
-    color: #991b1b;
-  }
-  .message.info {
-    display: block;
-    background: #dbeafe;
-    color: #1e40af;
-  }
-  .section-title {
-    background: #111827;
-    color: white;
-    padding: 12px 16px;
-    border-radius: 8px 8px 0 0;
-    margin: 0 -24px 16px -24px;
-    padding-left: 24px;
-  }
-  .setup-hint {
-    background: #fef3c7;
-    border-left: 4px solid #f59e0b;
-    padding: 12px 16px;
-    border-radius: 8px;
-    margin-bottom: 16px;
-  }
-  .table-container {
-    overflow-x: auto;
-    margin-top: 16px;
-  }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 14px;
-  }
-  th {
-    background: #f3f4f6;
-    padding: 10px;
-    text-align: left;
-    border: 1px solid #e5e7eb;
-  }
-  td {
-    padding: 10px;
-    border: 1px solid #e5e7eb;
-  }
-  .tag {
-    display: inline-block;
-    background: #dbeafe;
-    padding: 2px 10px;
-    border-radius: 12px;
-    font-size: 12px;
-    color: #1e40af;
-    margin: 2px;
-  }
-  .flex-row {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    align-items: center;
-  }
-  @media (max-width: 600px) {
-    .form-row, .form-row-3 {
-      grid-template-columns: 1fr;
-    }
-  }
+
+}
+
 </style>
+
 </head>
+
+
 <body>
 
+
 <div class="container">
-  <h1>👨‍🏫 Coach - Workout Builder</h1>
-  <p>Create and manage workout plans for your clients</p>
 
-  <div class="card">
-    <div class="section-title">
-      <h2 style="margin:0;color:white;">🔧 Setup</h2>
-    </div>
-    <div class="setup-hint">
-      <strong>Google Sheet Structure (Single Sheet):</strong><br>
-      Create a sheet named <strong>"WorkoutData"</strong> with these columns:<br>
-      <code>Username | Week | Day | Major | Exercise | Arabic | Muscle | Sets | Reps | Rest</code>
-    </div>
-    <div class="form-group">
-      <label>Google Apps Script Web App URL</label>
-      <input type="text" id="apiUrl" placeholder="https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec" style="width:100%;padding:10px;border:1px solid #d1d5db;border-radius:8px;">
-      <small style="color:#6b7280;">Deploy your script and paste the URL here</small>
-    </div>
-    <div class="flex-row">
-      <button class="btn btn-primary" onclick="loadUsers()">📥 Load Users</button>
-      <button class="btn btn-secondary" onclick="testConnection()">🔌 Test Connection</button>
-    </div>
-    <div id="userList" style="margin-top:12px;"></div>
-  </div>
 
-  <div class="card">
-    <div class="section-title">
-      <h2 style="margin:0;color:white;">📝 Add/Edit Exercise</h2>
-    </div>
-    
-    <div class="form-row">
-      <div class="form-group">
-        <label>Username *</label>
-        <input type="text" id="username" placeholder="e.g., john_doe" list="userSuggestions">
-        <datalist id="userSuggestions"></datalist>
-      </div>
-      <div class="form-group">
-        <label>Week *</label>
-        <select id="week">
-          <option value="">-- Select Week --</option>
-          <option value="Week 1">Week 1</option>
-          <option value="Week 2">Week 2</option>
-          <option value="Week 3">Week 3</option>
-          <option value="Week 4">Week 4</option>
-          <option value="Week 5">Week 5</option>
-          <option value="Week 6">Week 6</option>
-          <option value="Week 7">Week 7</option>
-          <option value="Week 8">Week 8</option>
-          <option value="Week 9">Week 9</option>
-          <option value="Week 10">Week 10</option>
-          <option value="Week 11">Week 11</option>
-          <option value="Week 12">Week 12</option>
-        </select>
-      </div>
-    </div>
-    
-    <div class="form-row">
-      <div class="form-group">
-        <label>Day *</label>
-        <select id="day">
-          <option value="">-- Select Day --</option>
-          <option value="Day 1">Day 1</option>
-          <option value="Day 2">Day 2</option>
-          <option value="Day 3">Day 3</option>
-          <option value="Day 4">Day 4</option>
-          <option value="Day 5">Day 5</option>
-          <option value="Day 6">Day 6</option>
-          <option value="Day 7">Day 7</option>
-          <option value="Monday">Monday</option>
-          <option value="Tuesday">Tuesday</option>
-          <option value="Wednesday">Wednesday</option>
-          <option value="Thursday">Thursday</option>
-          <option value="Friday">Friday</option>
-          <option value="Saturday">Saturday</option>
-          <option value="Sunday">Sunday</option>
-          <option value="Rest Day">Rest Day</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Major / Workout Name</label>
-        <select id="major">
-          <option value="">-- Select Major --</option>
-          <option value="Upper A - Chest & Back">Upper A - Chest & Back</option>
-          <option value="Upper B - Shoulders & Lats">Upper B - Shoulders & Lats</option>
-          <option value="Lower A - Quads & Glutes">Lower A - Quads & Glutes</option>
-          <option value="Lower B - Hamstrings & Glutes">Lower B - Hamstrings & Glutes</option>
-          <option value="Full Body">Full Body</option>
-          <option value="Push Day">Push Day</option>
-          <option value="Pull Day">Pull Day</option>
-          <option value="Leg Day">Leg Day</option>
-          <option value="Cardio">Cardio</option>
-          <option value="Active Recovery">Active Recovery</option>
-        </select>
-      </div>
-    </div>
-    
-    <div class="form-row">
-      <div class="form-group">
-        <label>Exercise (English) *</label>
-        <input type="text" id="exercise" placeholder="e.g., Incline Barbell Chest Press" list="exerciseSuggestions">
-        <datalist id="exerciseSuggestions">
-          <option value="Incline Barbell Chest Press">
-          <option value="Flat Barbell Bench Press">
-          <option value="Dumbbell Bench Press">
-          <option value="Lat Pulldown">
-          <option value="Seated Cable Row">
-          <option value="Bent Over Row">
-          <option value="Shoulder Press">
-          <option value="Lateral Raises">
-          <option value="Front Raises">
-          <option value="Bicep Curls">
-          <option value="Tricep Pushdowns">
-          <option value="Squats">
-          <option value="Deadlifts">
-          <option value="Leg Press">
-          <option value="Leg Extensions">
-          <option value="Leg Curls">
-          <option value="Calf Raises">
-          <option value="Planks">
-          <option value="Push-ups">
-          <option value="Pull-ups">
-        </datalist>
-      </div>
-      <div class="form-group">
-        <label>Exercise (Arabic)</label>
-        <input type="text" id="arabic" placeholder="e.g., بنش مائل بالبار">
-      </div>
-    </div>
-    
-    <div class="form-group">
-      <label>Target Muscle</label>
-      <select id="muscle">
-        <option value="">-- Select Muscle --</option>
-        <option value="الصدر العلوي">الصدر العلوي</option>
-        <option value="الصدر السفلي">الصدر السفلي</option>
-        <option value="الصدر الأوسط">الصدر الأوسط</option>
-        <option value="الصدر كامل">الصدر كامل</option>
-        <option value="الظهر / اللاتس">الظهر / اللاتس</option>
-        <option value="أعلى الظهر">أعلى الظهر</option>
-        <option value="وسط الظهر">وسط الظهر</option>
-        <option value="أسفل الظهر">أسفل الظهر</option>
-        <option value="الكتف الأمامي">الكتف الأمامي</option>
-        <option value="الكتف الجانبي">الكتف الجانبي</option>
-        <option value="الكتف الخلفي">الكتف الخلفي</option>
-        <option value="الكتف الجانبي والعلوي">الكتف الجانبي والعلوي</option>
-        <option value="البايسبس">البايسبس</option>
-        <option value="الترايسبس">الترايسبس</option>
-        <option value="الساعد">الساعد</option>
-        <option value="الفخذ الأمامي">الفخذ الأمامي</option>
-        <option value="الفخذ الخلفي">الفخذ الخلفي</option>
-        <option value="المؤخرة">المؤخرة</option>
-        <option value="الساق">الساق</option>
-        <option value="البطن">البطن</option>
-        <option value="الجذع">الجذع</option>
-        <option value="عضلة الساعد والباي">عضلة الساعد والباي</option>
-        <option value="الرأس الطويل للتراي">الرأس الطويل للتراي</option>
-        <option value="المجنص السفلي (Lats)">المجنص السفلي (Lats)</option>
-        <option value="الترابيس العلوية">الترابيس العلوية</option>
-        <option value="عزل الصدر">عزل الصدر</option>
-        <option value="عزل الأماميات">عزل الأماميات</option>
-        <option value="عزل الخلفيات">عزل الخلفيات</option>
-      </select>
-    </div>
-    
-    <div class="form-row-3">
-      <div class="form-group">
-        <label>Sets</label>
-        <select id="sets">
-          <option value="">--</option>
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5">5</option>
-          <option value="6">6</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Reps</label>
-        <select id="reps">
-          <option value="">--</option>
-          <option value="4-6">4-6</option>
-          <option value="6-8">6-8</option>
-          <option value="8-10">8-10</option>
-          <option value="10-12">10-12</option>
-          <option value="12-15">12-15</option>
-          <option value="15-20">15-20</option>
-          <option value="AMRAP">AMRAP</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Rest</label>
-        <select id="rest">
-          <option value="">--</option>
-          <option value="30 ثانية">30 ثانية</option>
-          <option value="45 ثانية">45 ثانية</option>
-          <option value="60 ثانية">60 ثانية</option>
-          <option value="90 ثانية">90 ثانية</option>
-          <option value="2 دقائق">2 دقائق</option>
-          <option value="2.5-3 دقائق">2.5-3 دقائق</option>
-          <option value="3 دقائق">3 دقائق</option>
-          <option value="3-4 دقائق">3-4 دقائق</option>
-          <option value="4-5 دقائق">4-5 دقائق</option>
-        </select>
-      </div>
-    </div>
-    
-    <div class="flex-row">
-      <button class="btn btn-success" onclick="addWorkout()">➕ Add/Update Exercise</button>
-      <button class="btn btn-danger" onclick="deleteWorkout()">🗑️ Delete Exercise</button>
-      <button class="btn btn-warning" onclick="clearForm()">🔄 Clear Form</button>
-    </div>
-    <div id="addMessage" class="message"></div>
-  </div>
+<h1>👨‍🏫 Coach - Workout Builder</h1>
 
-  <div class="card">
-    <div class="section-title">
-      <h2 style="margin:0;color:white;">📋 View & Manage Workouts</h2>
-    </div>
-    <div class="form-group">
-      <label>Select Username to View</label>
-      <div class="flex-row">
-        <input type="text" id="viewUsername" placeholder="Enter username" style="flex:1;padding:10px;border:1px solid #d1d5db;border-radius:8px;" list="viewUserSuggestions">
-        <datalist id="viewUserSuggestions"></datalist>
-        <button class="btn btn-primary" onclick="viewWorkout()">👁️ View</button>
-        <button class="btn btn-secondary" onclick="refreshView()">🔄 Refresh</button>
-      </div>
-    </div>
-    <div id="viewContent"></div>
-  </div>
+<p>Create and manage workout plans for your clients</p>
+
+
+
+<!-- ===================================================== -->
+<!-- SETUP -->
+<!-- ===================================================== -->
+
+
+<div class="card">
+
+
+<div class="section-title">
+
+<h2 style="margin:0;color:white;">
+🔧 Setup
+</h2>
+
 </div>
 
+
+<div class="setup-hint">
+
+<strong>Google Sheet Structure:</strong>
+
+<br>
+
+Sheet name:
+
+<strong>WorkoutData</strong>
+
+<br><br>
+
+Columns:
+
+<code>
+Username | Week | Day | Major | Exercise | Arabic | Muscle | Sets | Reps | Rest
+</code>
+
+</div>
+
+
+
+<div class="form-group">
+
+
+<label>
+Google Apps Script Web App URL
+</label>
+
+
+<input
+type="text"
+id="apiUrl"
+placeholder="https://script.google.com/macros/s/....../exec"
+>
+
+
+<small style="color:#6b7280;">
+
+Deploy your Apps Script as a Web App and paste the URL here.
+
+</small>
+
+
+</div>
+
+
+
+<button
+class="btn btn-primary"
+onclick="loadUsers()"
+>
+
+📥 Load Users
+
+</button>
+
+
+<div
+id="userList"
+style="margin-top:12px;"
+></div>
+
+
+</div>
+
+
+
+
+
+<!-- ===================================================== -->
+<!-- EXCEL IMPORT -->
+<!-- ===================================================== -->
+
+
+<div class="card">
+
+
+<div class="section-title">
+
+<h2 style="margin:0;color:white;">
+📥 Import Workout From Excel
+</h2>
+
+</div>
+
+
+
+<div class="setup-hint">
+
+<strong>Excel structure:</strong>
+
+<br>
+
+<strong>Sheet 1:</strong>
+Roadmap
+
+<br>
+
+<strong>Sheet 2:</strong>
+Exercise details
+
+<br><br>
+
+The importer automatically detects:
+
+<br>
+
+• Upper A
+
+<br>
+
+• Upper B
+
+<br>
+
+• Lower A & B
+
+<br><br>
+
+<strong>
+Lower A and Lower B will automatically receive the same exercises.
+</strong>
+
+</div>
+
+
+
+<div class="form-group">
+
+
+<label>
+Username *
+</label>
+
+
+<input
+type="text"
+id="excelUsername"
+placeholder="e.g. john_doe"
+>
+
+
+</div>
+
+
+
+<div class="form-group">
+
+
+<label>
+Select Excel File *
+</label>
+
+
+<input
+type="file"
+id="excelFile"
+accept=".xlsx,.xls"
+>
+
+
+</div>
+
+
+
+<button
+class="btn btn-primary"
+onclick="importExcel()"
+>
+
+📥 Convert Excel & Save Workout
+
+</button>
+
+
+
+<div
+id="excelMessage"
+class="message"
+></div>
+
+
+
+<div
+id="importSummary"
+class="import-summary"
+></div>
+
+
+</div>
+
+
+
+
+
+<!-- ===================================================== -->
+<!-- ADD / EDIT EXERCISE -->
+<!-- ===================================================== -->
+
+
+<div class="card">
+
+
+<div class="section-title">
+
+<h2 style="margin:0;color:white;">
+📝 Add/Edit Exercise
+</h2>
+
+</div>
+
+
+
+<div class="form-row">
+
+
+<div class="form-group">
+
+<label>Username *</label>
+
+<input
+type="text"
+id="username"
+placeholder="e.g., john_doe"
+>
+
+</div>
+
+
+
+<div class="form-group">
+
+<label>Week *</label>
+
+<input
+type="text"
+id="week"
+placeholder="e.g., الأسبوع A (Upper Focus)"
+>
+
+</div>
+
+
+</div>
+
+
+
+
+<div class="form-row">
+
+
+<div class="form-group">
+
+<label>Day *</label>
+
+<input
+type="text"
+id="day"
+placeholder="e.g., Day 1"
+>
+
+</div>
+
+
+
+<div class="form-group">
+
+<label>Major / Workout Name</label>
+
+<input
+type="text"
+id="major"
+placeholder="e.g., Upper A"
+>
+
+</div>
+
+
+</div>
+
+
+
+
+<div class="form-row">
+
+
+<div class="form-group">
+
+<label>Exercise (English) *</label>
+
+<input
+type="text"
+id="exercise"
+placeholder="e.g., Incline Barbell Chest Press"
+>
+
+</div>
+
+
+
+<div class="form-group">
+
+<label>Exercise (Arabic)</label>
+
+<input
+type="text"
+id="arabic"
+placeholder="e.g., بنش مائل بالبار"
+>
+
+</div>
+
+
+</div>
+
+
+
+
+<div class="form-group">
+
+<label>Target Muscle</label>
+
+<input
+type="text"
+id="muscle"
+placeholder="e.g., الصدر العلوي"
+>
+
+</div>
+
+
+
+
+<div class="form-row-3">
+
+
+<div class="form-group">
+
+<label>Sets</label>
+
+<input
+type="text"
+id="sets"
+placeholder="3"
+>
+
+</div>
+
+
+
+<div class="form-group">
+
+<label>Reps</label>
+
+<input
+type="text"
+id="reps"
+placeholder="6-8"
+>
+
+</div>
+
+
+
+<div class="form-group">
+
+<label>Rest</label>
+
+<input
+type="text"
+id="rest"
+placeholder="2.5-3 دقائق"
+>
+
+</div>
+
+
+</div>
+
+
+
+
+<div style="display:flex;gap:10px;flex-wrap:wrap;">
+
+
+<button
+class="btn btn-success"
+onclick="addWorkout()"
+>
+
+➕ Add/Update Exercise
+
+</button>
+
+
+
+<button
+class="btn btn-danger"
+onclick="deleteWorkout()"
+>
+
+🗑️ Delete Exercise
+
+</button>
+
+
+
+<button
+class="btn btn-warning"
+onclick="clearForm()"
+>
+
+🔄 Clear Form
+
+</button>
+
+
+</div>
+
+
+
+<div
+id="addMessage"
+class="message"
+></div>
+
+
+</div>
+
+
+
+
+
+<!-- ===================================================== -->
+<!-- VIEW WORKOUT -->
+<!-- ===================================================== -->
+
+
+<div class="card">
+
+
+<div class="section-title">
+
+<h2 style="margin:0;color:white;">
+📋 View Workout Plan
+</h2>
+
+</div>
+
+
+
+<div class="form-group">
+
+
+<label>
+Select Username to View
+</label>
+
+
+
+<div style="display:flex;gap:10px;">
+
+
+<input
+type="text"
+id="viewUsername"
+placeholder="Enter username"
+style="flex:1;"
+>
+
+
+
+<button
+class="btn btn-primary"
+onclick="viewWorkout()"
+>
+
+👁️ View
+
+</button>
+
+
+</div>
+
+
+</div>
+
+
+
+<div id="viewContent"></div>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
 <script>
+
+
 // ============================================================
 // CONFIGURATION
 // ============================================================
+
+
 const STORAGE_KEY = 'coach_api_url';
 
-const savedUrl = localStorage.getItem(STORAGE_KEY);
+
+// Load saved API URL
+
+const savedUrl =
+localStorage.getItem(STORAGE_KEY);
+
+
 if (savedUrl) {
-  document.getElementById('apiUrl').value = savedUrl;
+
+  document.getElementById('apiUrl').value =
+    savedUrl;
+
 }
 
-document.getElementById('apiUrl').addEventListener('change', function() {
-  localStorage.setItem(STORAGE_KEY, this.value);
-});
+
+// Save API URL
+
+document
+.getElementById('apiUrl')
+.addEventListener(
+  'change',
+  function() {
+
+    localStorage.setItem(
+      STORAGE_KEY,
+      this.value
+    );
+
+  }
+);
+
+
+
+
 
 // ============================================================
-// API CALLS
+// API CALL
 // ============================================================
+
+
 async function callApi(action, data = {}) {
   const baseUrl = document.getElementById('apiUrl').value.trim();
 
@@ -511,250 +996,1904 @@ async function callApi(action, data = {}) {
 
 
 
-// ============================================================
-// TEST CONNECTION
-// ============================================================
-async function testConnection() {
-  const url = document.getElementById('apiUrl').value.trim();
-  if (!url) {
-    showStatus('Please enter your Web App URL', 'error');
-    return;
-  }
-  
-  showStatus('🔄 Testing connection...', 'info');
-  
-  try {
-    const result = await callApi('test');
-    if (result && result.status === 'success') {
-      showStatus('✅ Connection successful! API is working correctly.', 'success');
-    } else {
-      showStatus('⚠️ API returned: ' + (result?.message || 'Unknown response'), 'warning');
-    }
-  } catch (error) {
-    showStatus('❌ Connection failed: ' + error.message, 'error');
-  }
-}
+
 
 // ============================================================
 // LOAD USERS
 // ============================================================
+
+
 async function loadUsers() {
-  showStatus('🔄 Loading users...', 'info');
-  
-  const result = await callApi('getUsers');
-  if (result && result.status === 'success') {
-    const userList = document.getElementById('userList');
-    const userSuggestions = document.getElementById('userSuggestions');
-    const viewUserSuggestions = document.getElementById('viewUserSuggestions');
-    
-    if (result.users && result.users.length > 0) {
+
+
+  const result =
+    await callApi(
+      'getUsers'
+    );
+
+
+
+  if (
+    result &&
+    result.status === 'success'
+  ) {
+
+
+    const userList =
+      document
+      .getElementById('userList');
+
+
+
+    if (
+      result.users &&
+      result.users.length > 0
+    ) {
+
+
       userList.innerHTML = `
-        <strong>👥 Users (${result.users.length}):</strong><br>
-        ${result.users.map(u => 
-          `<span class="tag">${u}</span>`
+
+        <strong>Users:</strong>
+
+        ${result.users.map(
+          u => `
+
+            <span
+              style="
+              display:inline-block;
+              background:#dbeafe;
+              padding:4px 12px;
+              border-radius:12px;
+              margin:4px;
+              "
+            >
+
+              ${escapeHtml(u)}
+
+            </span>
+
+          `
         ).join(' ')}
+
       `;
-      
-      userSuggestions.innerHTML = result.users.map(u => 
-        `<option value="${u}">`
-      ).join('');
-      
-      viewUserSuggestions.innerHTML = result.users.map(u => 
-        `<option value="${u}">`
-      ).join('');
-      
-      showStatus(`✅ Loaded ${result.users.length} users`, 'success');
+
+
     } else {
-      userList.innerHTML = '<p style="color:#6b7280;">No users found. Add your first workout!</p>';
-      showStatus('ℹ️ No users found', 'info');
+
+
+      userList.innerHTML =
+
+        '<p style="color:#6b7280;">' +
+
+        'No users found. Add your first workout!' +
+
+        '</p>';
+
     }
+
+
   }
+
 }
 
+
+
+
+
 // ============================================================
-// ADD/UPDATE WORKOUT
+// ADD / UPDATE WORKOUT
 // ============================================================
+
+
 async function addWorkout() {
+
+
   const data = {
-    username: document.getElementById('username').value.trim(),
-    week: document.getElementById('week').value.trim(),
-    day: document.getElementById('day').value.trim(),
-    major: document.getElementById('major').value.trim(),
-    exercise: document.getElementById('exercise').value.trim(),
-    arabic: document.getElementById('arabic').value.trim(),
-    muscle: document.getElementById('muscle').value.trim(),
-    sets: document.getElementById('sets').value.trim(),
-    reps: document.getElementById('reps').value.trim(),
-    rest: document.getElementById('rest').value.trim()
+
+
+    username:
+      document
+      .getElementById('username')
+      .value
+      .trim(),
+
+
+    week:
+      document
+      .getElementById('week')
+      .value
+      .trim(),
+
+
+    day:
+      document
+      .getElementById('day')
+      .value
+      .trim(),
+
+
+    major:
+      document
+      .getElementById('major')
+      .value
+      .trim(),
+
+
+    exercise:
+      document
+      .getElementById('exercise')
+      .value
+      .trim(),
+
+
+    arabic:
+      document
+      .getElementById('arabic')
+      .value
+      .trim(),
+
+
+    muscle:
+      document
+      .getElementById('muscle')
+      .value
+      .trim(),
+
+
+    sets:
+      document
+      .getElementById('sets')
+      .value
+      .trim(),
+
+
+    reps:
+      document
+      .getElementById('reps')
+      .value
+      .trim(),
+
+
+    rest:
+      document
+      .getElementById('rest')
+      .value
+      .trim()
+
   };
-  
-  if (!data.username || !data.week || !data.day || !data.exercise) {
-    showStatus('Please fill in Username, Week, Day, and Exercise', 'error');
+
+
+
+  if (
+    !data.username ||
+    !data.week ||
+    !data.day ||
+    !data.exercise
+  ) {
+
+
+    showMessage(
+
+      'addMessage',
+
+      'Please fill in Username, Week, Day, and Exercise',
+
+      'error'
+
+    );
+
+
     return;
+
   }
-  
-  showStatus('🔄 Saving workout...', 'info');
-  
-  const result = await callApi('addWorkout', data);
-  if (result && result.status === 'success') {
-    showStatus('✅ ' + result.message, 'success');
+
+
+
+  const result =
+    await callApi(
+      'addWorkout',
+      data
+    );
+
+
+
+  if (
+    result &&
+    result.status === 'success'
+  ) {
+
+
+    showMessage(
+
+      'addMessage',
+
+      '✅ ' +
+      result.message,
+
+      'success'
+
+    );
+
+
     loadUsers();
-    const viewUser = document.getElementById('viewUsername').value.trim();
-    if (viewUser === data.username) {
-      viewWorkout();
-    }
+
+
   }
+
 }
+
+
+
+
 
 // ============================================================
 // DELETE WORKOUT
 // ============================================================
+
+
 async function deleteWorkout() {
+
+
   const data = {
-    username: document.getElementById('username').value.trim(),
-    week: document.getElementById('week').value.trim(),
-    day: document.getElementById('day').value.trim(),
-    exercise: document.getElementById('exercise').value.trim()
+
+
+    username:
+      document
+      .getElementById('username')
+      .value
+      .trim(),
+
+
+    week:
+      document
+      .getElementById('week')
+      .value
+      .trim(),
+
+
+    day:
+      document
+      .getElementById('day')
+      .value
+      .trim(),
+
+
+    exercise:
+      document
+      .getElementById('exercise')
+      .value
+      .trim()
+
   };
-  
-  if (!data.username || !data.week || !data.day || !data.exercise) {
-    showStatus('Please fill in Username, Week, Day, and Exercise to delete', 'error');
+
+
+
+  if (
+    !data.username ||
+    !data.week ||
+    !data.day ||
+    !data.exercise
+  ) {
+
+
+    showMessage(
+
+      'addMessage',
+
+      'Please fill in Username, Week, Day, and Exercise to delete',
+
+      'error'
+
+    );
+
+
     return;
+
   }
-  
-  if (!confirm(`Delete "${data.exercise}" for ${data.username}?`)) return;
-  
-  showStatus('🔄 Deleting workout...', 'info');
-  
-  const result = await callApi('deleteWorkout', data);
-  if (result && result.status === 'success') {
-    showStatus('✅ ' + result.message, 'success');
+
+
+
+  if (
+    !confirm(
+      `Delete "${data.exercise}" for ${data.username}?`
+    )
+  ) {
+
+    return;
+
+  }
+
+
+
+  const result =
+    await callApi(
+      'deleteWorkout',
+      data
+    );
+
+
+
+  if (
+    result &&
+    result.status === 'success'
+  ) {
+
+
+    showMessage(
+
+      'addMessage',
+
+      '✅ ' +
+      result.message,
+
+      'success'
+
+    );
+
+
     loadUsers();
-    const viewUser = document.getElementById('viewUsername').value.trim();
-    if (viewUser === data.username) {
-      viewWorkout();
-    }
+
+
   }
+
 }
+
+
+
+
 
 // ============================================================
 // VIEW WORKOUT
 // ============================================================
+
+
 async function viewWorkout() {
-  const username = document.getElementById('viewUsername').value.trim();
+
+
+  const username =
+    document
+    .getElementById('viewUsername')
+    .value
+    .trim();
+
+
+
   if (!username) {
-    showStatus('Please enter a username', 'error');
+
+
+    showMessage(
+
+      'addMessage',
+
+      'Please enter a username',
+
+      'error'
+
+    );
+
+
     return;
+
   }
-  
-  showStatus('🔄 Loading workout for ' + username + '...', 'info');
-  
-  const result = await callApi('getWorkoutData', { username });
-  if (result && result.status === 'success') {
-    const container = document.getElementById('viewContent');
-    
-    if (!result.sections || result.sections.length === 0) {
-      container.innerHTML = '<p style="color:#6b7280;padding:20px;">No workout data found for this user</p>';
-      showStatus('ℹ️ No workouts found for ' + username, 'info');
+
+
+
+  const result =
+    await callApi(
+
+      'getWorkoutData',
+
+      {
+        username
+      }
+
+    );
+
+
+
+  if (
+    result &&
+    result.status === 'success'
+  ) {
+
+
+    const container =
+      document
+      .getElementById('viewContent');
+
+
+
+    if (
+      !result.sections ||
+      result.sections.length === 0
+    ) {
+
+
+      container.innerHTML =
+
+        '<p style="color:#6b7280;">' +
+
+        'No workout data found for this user' +
+
+        '</p>';
+
+
       return;
+
     }
-    
-    let html = `<div style="margin-bottom:12px;font-weight:bold;color:#1e40af;">📋 ${result.sections.length} days of workouts</div>`;
-    html += '<div class="table-container"><table>';
-    html += '<tr><th>Week</th><th>Day</th><th>Major</th><th>Exercise</th><th>Arabic</th><th>Muscle</th><th>Sets</th><th>Reps</th><th>Rest</th></tr>';
-    
-    result.sections.forEach(section => {
-      section.exercises.forEach(ex => {
-        html += `<tr>
-          <td>${ex.week || ''}</td>
-          <td><strong>${section.title}</strong></td>
-          <td>${ex.major || ''}</td>
-          <td>${ex.eng}</td>
-          <td>${ex.arb || ''}</td>
-          <td>${ex.muscle || ''}</td>
-          <td>${ex.sets || ''}</td>
-          <td>${ex.reps || ''}</td>
-          <td>${ex.rest || ''}</td>
-        </tr>`;
-      });
-    });
-    
-    html += '</table></div>';
-    container.innerHTML = html;
-    
-    showStatus(`✅ Loaded workout plan for ${username} (${result.sections.length} days)`, 'success');
+
+
+
+    let html =
+
+      '<div class="table-container">' +
+
+      '<table>';
+
+
+
+    html += `
+
+      <tr>
+
+        <th>Week</th>
+
+        <th>Day</th>
+
+        <th>Major</th>
+
+        <th>Exercise</th>
+
+        <th>Arabic</th>
+
+        <th>Muscle</th>
+
+        <th>Sets</th>
+
+        <th>Reps</th>
+
+        <th>Rest</th>
+
+      </tr>
+
+    `;
+
+
+
+    result.sections.forEach(
+      section => {
+
+
+        section.exercises.forEach(
+          ex => {
+
+
+            html += `
+
+              <tr>
+
+                <td>
+                  ${escapeHtml(ex.week || '')}
+                </td>
+
+                <td>
+                  ${escapeHtml(section.title || '')}
+                </td>
+
+                <td>
+                  ${escapeHtml(ex.major || '')}
+                </td>
+
+                <td>
+                  ${escapeHtml(ex.eng || '')}
+                </td>
+
+                <td>
+                  ${escapeHtml(ex.arb || '')}
+                </td>
+
+                <td>
+                  ${escapeHtml(ex.muscle || '')}
+                </td>
+
+                <td>
+                  ${escapeHtml(ex.sets || '')}
+                </td>
+
+                <td>
+                  ${escapeHtml(ex.reps || '')}
+                </td>
+
+                <td>
+                  ${escapeHtml(ex.rest || '')}
+                </td>
+
+              </tr>
+
+            `;
+
+          }
+        );
+
+      }
+    );
+
+
+
+    html +=
+
+      '</table>' +
+
+      '</div>';
+
+
+
+    container.innerHTML =
+      html;
+
+
+
+    showMessage(
+
+      'addMessage',
+
+      `✅ Loaded workout plan for ${username}`,
+
+      'success'
+
+    );
+
+
   }
+
 }
 
-// ============================================================
-// REFRESH VIEW
-// ============================================================
-function refreshView() {
-  const username = document.getElementById('viewUsername').value.trim();
-  if (username) {
-    viewWorkout();
-  } else {
-    showStatus('Please enter a username first', 'warning');
-  }
-}
+
+
+
 
 // ============================================================
 // CLEAR FORM
 // ============================================================
+
+
 function clearForm() {
+
+
   document.getElementById('username').value = '';
+
   document.getElementById('week').value = '';
+
   document.getElementById('day').value = '';
+
   document.getElementById('major').value = '';
+
   document.getElementById('exercise').value = '';
+
   document.getElementById('arabic').value = '';
+
   document.getElementById('muscle').value = '';
+
   document.getElementById('sets').value = '';
+
   document.getElementById('reps').value = '';
+
   document.getElementById('rest').value = '';
-  showStatus('🔄 Form cleared', 'info');
+
 }
 
+
+
+
+
 // ============================================================
-// SHOW STATUS
+// EXCEL IMPORT
 // ============================================================
-function showStatus(text, type = 'info') {
-  const statusBar = document.getElementById('addMessage');
-  statusBar.textContent = text;
-  statusBar.className = 'message ' + type;
-  statusBar.style.display = 'block';
-  
-  if (type === 'success' || type === 'info') {
-    setTimeout(() => {
-      if (statusBar.textContent === text) {
-        statusBar.style.display = 'none';
+
+
+async function importExcel() {
+
+
+  const username =
+
+    document
+    .getElementById('excelUsername')
+    .value
+    .trim();
+
+
+
+  const fileInput =
+
+    document
+    .getElementById('excelFile');
+
+
+
+  const file =
+    fileInput.files[0];
+
+
+
+  if (!username) {
+
+
+    showExcelMessage(
+
+      '❌ Please enter Username',
+
+      'error'
+
+    );
+
+
+    return;
+
+  }
+
+
+
+  if (!file) {
+
+
+    showExcelMessage(
+
+      '❌ Please select an Excel file',
+
+      'error'
+
+    );
+
+
+    return;
+
+  }
+
+
+
+  try {
+
+
+    showExcelMessage(
+
+      '⏳ Reading Excel file...',
+
+      'success'
+
+    );
+
+
+
+    // ========================================================
+    // READ EXCEL
+    // ========================================================
+
+
+    const buffer =
+      await file.arrayBuffer();
+
+
+
+    const workbook =
+      XLSX.read(
+
+        buffer,
+
+        {
+          type: 'array'
+        }
+
+      );
+
+
+
+    if (
+      workbook.SheetNames.length < 2
+    ) {
+
+
+      showExcelMessage(
+
+        '❌ Excel file must contain at least 2 sheets',
+
+        'error'
+
+      );
+
+
+      return;
+
+    }
+
+
+
+    // ========================================================
+    // SHEET 1 = ROADMAP
+    // ========================================================
+
+
+    const roadmapSheet =
+
+      workbook.Sheets[
+        workbook.SheetNames[0]
+      ];
+
+
+
+    const roadmap =
+
+      XLSX.utils.sheet_to_json(
+
+        roadmapSheet,
+
+        {
+
+          header: 1,
+
+          defval: ''
+
+        }
+
+      );
+
+
+
+    // ========================================================
+    // SHEET 2 = EXERCISES
+    // ========================================================
+
+
+    const exerciseSheet =
+
+      workbook.Sheets[
+        workbook.SheetNames[1]
+      ];
+
+
+
+    const exerciseRows =
+
+      XLSX.utils.sheet_to_json(
+
+        exerciseSheet,
+
+        {
+
+          header: 1,
+
+          defval: ''
+
+        }
+
+      );
+
+
+
+    // ========================================================
+    // PARSE EXERCISES
+    // ========================================================
+
+
+    const majors =
+
+      parseExerciseSheet(
+        exerciseRows
+      );
+
+
+
+    // ========================================================
+    // PARSE ROADMAP
+    // ========================================================
+
+
+    const workoutRows =
+
+      parseRoadmapSheet(
+
+        roadmap,
+
+        majors,
+
+        username
+
+      );
+
+
+
+    if (
+      workoutRows.length === 0
+    ) {
+
+
+      showExcelMessage(
+
+        '❌ No workout exercises found. Please check your Excel structure.',
+
+        'error'
+
+      );
+
+
+      return;
+
+    }
+
+
+
+    // ========================================================
+    // SHOW SUMMARY
+    // ========================================================
+
+
+    const majorCounts = {};
+
+
+
+    workoutRows.forEach(
+      row => {
+
+        majorCounts[row.major] =
+
+          (majorCounts[row.major] || 0) + 1;
+
       }
-    }, 8000);
+    );
+
+
+
+    let summary =
+
+      '<strong>Excel converted successfully.</strong><br><br>' +
+
+      'Username: ' +
+      escapeHtml(username) +
+
+      '<br>' +
+
+      'Total workout rows: ' +
+      workoutRows.length +
+
+      '<br><br>';
+
+
+
+    Object.keys(majorCounts).forEach(
+      major => {
+
+        summary +=
+
+          escapeHtml(major) +
+
+          ': ' +
+
+          majorCounts[major] +
+
+          ' exercises<br>';
+
+      }
+    );
+
+
+
+    document
+    .getElementById('importSummary')
+    .innerHTML = summary;
+
+
+
+    document
+    .getElementById('importSummary')
+    .style.display = 'block';
+
+
+
+    // ========================================================
+    // SEND TO GOOGLE SHEETS
+    // ========================================================
+
+
+    showExcelMessage(
+
+      '⏳ Saving workout to Google Sheet...',
+
+      'success'
+
+    );
+
+
+
+    let successCount = 0;
+
+    let errorCount = 0;
+
+
+
+    for (
+      const workout of workoutRows
+    ) {
+
+
+      const result =
+
+        await callApi(
+
+          'addWorkout',
+
+          workout
+
+        );
+
+
+
+      if (
+
+        result &&
+
+        result.status === 'success'
+
+      ) {
+
+
+        successCount++;
+
+
+      } else {
+
+
+        errorCount++;
+
+
+      }
+
+    }
+
+
+
+    // ========================================================
+    // FINAL RESULT
+    // ========================================================
+
+
+    if (
+      errorCount === 0
+    ) {
+
+
+      showExcelMessage(
+
+        `✅ Import completed successfully! ` +
+
+        `${successCount} workout rows saved.`,
+
+        'success'
+
+      );
+
+
+    } else {
+
+
+      showExcelMessage(
+
+        `⚠️ Import finished. ` +
+
+        `${successCount} succeeded, ` +
+
+        `${errorCount} failed.`,
+
+        'error'
+
+      );
+
+    }
+
+
+
+    // Refresh users
+
+    loadUsers();
+
+
+  } catch (error) {
+
+
+    console.error(
+      'Excel Import Error:',
+      error
+    );
+
+
+
+    showExcelMessage(
+
+      '❌ Excel Import Error: ' +
+
+      error.message,
+
+      'error'
+
+    );
+
   }
+
 }
 
-// ============================================================
-// KEYBOARD SHORTCUTS
-// ============================================================
-document.addEventListener('keydown', function(e) {
-  if (e.ctrlKey && e.key === 'Enter') {
-    e.preventDefault();
-    addWorkout();
-  }
-});
+
+
+
 
 // ============================================================
-// INIT
+// PARSE SHEET 2 - EXERCISES
 // ============================================================
-window.onload = function() {
-  if (document.getElementById('apiUrl').value.trim()) {
-    showStatus('⚡ Ready. Click "Load Users" or enter a username to view.', 'info');
-    setTimeout(() => loadUsers(), 500);
-  } else {
-    showStatus('⚡ Enter your Web App URL and click "Load Users"', 'info');
+
+
+function parseExerciseSheet(rows) {
+
+
+  const majors = {
+
+
+    'Upper A': [],
+
+    'Upper B': [],
+
+    'Lower A': [],
+
+    'Lower B': []
+
+  };
+
+
+
+  let currentMajor = null;
+
+
+
+  for (
+    let i = 0;
+
+    i < rows.length;
+
+    i++
+  ) {
+
+
+    const row = rows[i];
+
+
+
+    // Create combined text
+    // This allows the title to be
+    // anywhere in the row.
+
+
+    const rowText =
+
+      row
+
+      .map(
+        cell =>
+          String(cell || '').trim()
+      )
+
+      .join(' ');
+
+
+
+    // ========================================================
+    // DETECT UPPER A
+    // ========================================================
+
+
+    if (
+      rowText.includes('Upper A')
+    ) {
+
+
+      currentMajor = 'Upper A';
+
+
+      continue;
+
+    }
+
+
+
+    // ========================================================
+    // DETECT UPPER B
+    // ========================================================
+
+
+    if (
+      rowText.includes('Upper B')
+    ) {
+
+
+      currentMajor = 'Upper B';
+
+
+      continue;
+
+    }
+
+
+
+    // ========================================================
+    // DETECT LOWER A & B
+    // ========================================================
+
+
+    if (
+
+      rowText.includes('Lower A & B') ||
+
+      rowText.includes('Lower A&B') ||
+
+      rowText.includes('Lower A and B')
+
+    ) {
+
+
+      currentMajor = 'Lower A';
+
+
+      continue;
+
+    }
+
+
+
+    // ========================================================
+    // DETECT LOWER A
+    // ========================================================
+
+
+    if (
+      rowText.includes('Lower A')
+    ) {
+
+
+      currentMajor = 'Lower A';
+
+
+      continue;
+
+    }
+
+
+
+    // ========================================================
+    // DETECT LOWER B
+    // ========================================================
+
+
+    if (
+      rowText.includes('Lower B')
+    ) {
+
+
+      currentMajor = 'Lower B';
+
+
+      continue;
+
+    }
+
+
+
+    // ========================================================
+    // IGNORE EXERCISE HEADER
+    // ========================================================
+
+
+    if (
+
+      row.some(
+
+        cell =>
+
+          String(cell || '')
+          .trim() ===
+          'اسم التمرين (ENG)'
+
+      )
+
+    ) {
+
+
+      continue;
+
+    }
+
+
+
+    // ========================================================
+    // READ EXERCISE
+    // ========================================================
+
+
+    if (
+
+      currentMajor &&
+
+      row[0] &&
+
+      String(row[0]).trim() !== ''
+
+    ) {
+
+
+      const exercise = {
+
+
+        exercise:
+
+          String(
+            row[0] || ''
+          ).trim(),
+
+
+        arabic:
+
+          String(
+            row[1] || ''
+          ).trim(),
+
+
+        muscle:
+
+          String(
+            row[2] || ''
+          ).trim(),
+
+
+        sets:
+
+          String(
+            row[3] || ''
+          ).trim(),
+
+
+        reps:
+
+          String(
+            row[4] || ''
+          ).trim(),
+
+
+        rest:
+
+          String(
+            row[5] || ''
+          ).trim()
+
+      };
+
+
+
+      majors[currentMajor]
+      .push(exercise);
+
+
+    }
+
   }
+
+
+
+  // ========================================================
+  // IMPORTANT:
+  //
+  // Lower A = Lower B
+  //
+  // The Excel title is:
+  // Lower A & B
+  //
+  // Therefore both use the exact same exercises.
+  // ========================================================
+
+
+  if (
+    majors['Lower A'].length > 0
+  ) {
+
+
+    majors['Lower B'] =
+
+      majors['Lower A'].map(
+
+        exercise => ({
+          ...exercise
+        })
+
+      );
+
+  }
+
+
+
+  return majors;
+
+}
+
+
+
+
+
+// ============================================================
+// PARSE SHEET 1 - ROADMAP
+// ============================================================
+
+
+function parseRoadmapSheet(
+
+  rows,
+
+  majors,
+
+  username
+
+) {
+
+
+  const output = [];
+
+
+
+  // ==========================================================
+  // FIND REAL HEADER
+  //
+  // The first title line is ignored.
+  //
+  // We search for:
+  // الأسبوع | اليوم 1 | اليوم 2 ...
+  // ==========================================================
+
+
+  let headerIndex = -1;
+
+
+
+  for (
+    let i = 0;
+
+    i < rows.length;
+
+    i++
+  ) {
+
+
+    const row = rows[i];
+
+
+
+    if (
+
+      row.some(
+
+        cell =>
+
+          String(cell || '')
+          .trim() ===
+          'الأسبوع'
+
+      )
+
+    ) {
+
+
+      headerIndex = i;
+
+
+      break;
+
+    }
+
+  }
+
+
+
+  if (
+    headerIndex === -1
+  ) {
+
+
+    console.error(
+      'Roadmap header not found'
+    );
+
+
+    return [];
+
+  }
+
+
+
+  // ==========================================================
+  // READ WEEK ROWS
+  // ==========================================================
+
+
+  for (
+
+    let i = headerIndex + 1;
+
+    i < rows.length;
+
+    i++
+
+  ) {
+
+
+    const row = rows[i];
+
+
+
+    // First column = Week
+
+    const week =
+
+      String(
+        row[0] || ''
+      ).trim();
+
+
+
+    if (!week) {
+
+      continue;
+
+    }
+
+
+
+    // ========================================================
+    // DAYS 1 - 7
+    // ========================================================
+
+
+    for (
+
+      let dayIndex = 1;
+
+      dayIndex <= 7;
+
+      dayIndex++
+
+    ) {
+
+
+      const dayName =
+
+        String(
+
+          row[dayIndex] || ''
+
+        ).trim();
+
+
+
+      if (!dayName) {
+
+        continue;
+
+      }
+
+
+
+      // ======================================================
+      // REST DAY
+      // ======================================================
+
+
+      if (
+
+        dayName.includes('راحة') ||
+
+        dayName.toLowerCase()
+        .includes('rest')
+
+      ) {
+
+
+        continue;
+
+      }
+
+
+
+      // ======================================================
+      // FIND MAJOR
+      // ======================================================
+
+
+      const major =
+
+        detectMajor(dayName);
+
+
+
+      if (
+
+        !major ||
+
+        !majors[major] ||
+
+        majors[major].length === 0
+
+      ) {
+
+
+        console.warn(
+
+          'No exercises found for major:',
+
+          major
+
+        );
+
+
+        continue;
+
+      }
+
+
+
+      // ======================================================
+      // ADD EVERY EXERCISE
+      // FOR THIS MAJOR
+      // ======================================================
+
+
+      majors[major].forEach(
+
+        exercise => {
+
+
+          output.push({
+
+
+            username:
+
+              username,
+
+
+            week:
+
+              week,
+
+
+            // Store the original
+            // roadmap day name
+            // so it remains meaningful.
+
+
+            day:
+
+              dayName,
+
+
+            major:
+
+              major,
+
+
+            exercise:
+
+              exercise.exercise,
+
+
+            arabic:
+
+              exercise.arabic,
+
+
+            muscle:
+
+              exercise.muscle,
+
+
+            sets:
+
+              exercise.sets,
+
+
+            reps:
+
+              exercise.reps,
+
+
+            rest:
+
+              exercise.rest
+
+
+          });
+
+
+        }
+
+      );
+
+
+    }
+
+
+  }
+
+
+
+  return output;
+
+}
+
+
+
+
+
+// ============================================================
+// DETECT MAJOR
+// ============================================================
+
+
+function detectMajor(text) {
+
+
+  const value =
+
+    String(text || '')
+    .toLowerCase()
+    .trim();
+
+
+
+  // Upper A
+
+  if (
+
+    value.includes('upper a')
+
+  ) {
+
+
+    return 'Upper A';
+
+  }
+
+
+
+  // Upper B
+
+  if (
+
+    value.includes('upper b')
+
+  ) {
+
+
+    return 'Upper B';
+
+  }
+
+
+
+  // Lower A
+
+  if (
+
+    value.includes('lower a')
+
+  ) {
+
+
+    return 'Lower A';
+
+  }
+
+
+
+  // Lower B
+
+  if (
+
+    value.includes('lower b')
+
+  ) {
+
+
+    return 'Lower B';
+
+  }
+
+
+
+  return null;
+
+}
+
+
+
+
+
+// ============================================================
+// SHOW EXCEL MESSAGE
+// ============================================================
+
+
+function showExcelMessage(
+
+  text,
+
+  type
+
+) {
+
+
+  const el =
+
+    document
+    .getElementById(
+      'excelMessage'
+    );
+
+
+
+  el.textContent =
+
+    text;
+
+
+
+  el.className =
+
+    'message ' +
+    type;
+
+
+
+  el.style.display =
+
+    'block';
+
+}
+
+
+
+
+
+// ============================================================
+// SHOW GENERAL MESSAGE
+// ============================================================
+
+
+function showMessage(
+
+  elementId,
+
+  text,
+
+  type
+
+) {
+
+
+  const el =
+
+    document
+    .getElementById(
+      elementId
+    );
+
+
+
+  el.textContent =
+
+    text;
+
+
+
+  el.className =
+
+    'message ' +
+    type;
+
+
+
+  el.style.display =
+
+    'block';
+
+
+
+  setTimeout(
+
+    () => {
+
+      el.style.display =
+        'none';
+
+    },
+
+    5000
+
+  );
+
+}
+
+
+
+
+
+// ============================================================
+// BASIC HTML ESCAPE
+// ============================================================
+
+
+function escapeHtml(value) {
+
+
+  return String(value || '')
+
+    .replace(
+      /&/g,
+      '&amp;'
+    )
+
+    .replace(
+      /</g,
+      '&lt;'
+    )
+
+    .replace(
+      />/g,
+      '&gt;'
+    )
+
+    .replace(
+      /"/g,
+      '&quot;'
+    )
+
+    .replace(
+      /'/g,
+      '&#039;'
+    );
+
+}
+
+
+
+
+
+// ============================================================
+// PAGE LOAD
+// ============================================================
+
+
+window.onload = function() {
+
+
+  if (
+
+    document
+    .getElementById('apiUrl')
+    .value
+    .trim()
+
+  ) {
+
+
+    loadUsers();
+
+  }
+
 };
+
+
 </script>
 
+
 </body>
+
 </html>
