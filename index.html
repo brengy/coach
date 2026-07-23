@@ -932,94 +932,67 @@ document
 // ============================================================
 
 
-async function callApi(
-  action,
-  data = {}
-) {
+async function callApi(action, data = {}) {
+  const baseUrl = document.getElementById('apiUrl').value.trim();
 
-
-  const url =
-    document
-    .getElementById('apiUrl')
-    .value
-    .trim();
-
-
-
-  if (!url) {
-
+  if (!baseUrl) {
     showMessage(
       'addMessage',
       'Please enter your Google Apps Script URL',
       'error'
     );
-
     return null;
-
   }
 
-
-
   try {
+    // Build GET parameters
+    const params = new URLSearchParams();
 
+    params.append('action', action);
 
-    const response =
-      await fetch(
-        url,
-        {
+    // Add all data parameters
+    Object.keys(data).forEach(key => {
+      if (data[key] !== undefined && data[key] !== null) {
+        params.append(key, data[key]);
+      }
+    });
 
-          method: 'POST',
+    // Final URL
+    const url = baseUrl + '?' + params.toString();
 
-          headers: {
+    console.log('API Request:', url);
 
-            'Content-Type':
-              'application/json'
+    // GET request - NO POST
+    // NO Content-Type header
+    // Therefore NO CORS preflight request
+    const response = await fetch(url, {
+      method: 'GET'
+    });
 
-          },
-
-          body:
-            JSON.stringify({
-
-              action,
-
-              ...data
-
-            })
-
-        }
+    if (!response.ok) {
+      throw new Error(
+        'HTTP Error ' + response.status + ' - ' + response.statusText
       );
+    }
 
+    const result = await response.json();
 
-
-    const result =
-      await response.json();
-
-
+    console.log('API Response:', result);
 
     return result;
 
-
   } catch (error) {
-
+    console.error('API Error:', error);
 
     showMessage(
-
       'addMessage',
-
-      '❌ Error: ' +
-      error.message,
-
+      '❌ Error: ' + error.message,
       'error'
-
     );
 
-
     return null;
-
   }
-
 }
-
 
 
 
