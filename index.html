@@ -547,13 +547,13 @@ function parseExcelSmart(data) {
   const exerciseSheet = workbook.Sheets[workbook.SheetNames[1]];
   const exerciseRows = XLSX.utils.sheet_to_json(exerciseSheet, { header: 1, defval: '', blankrows: false });
 
-  // ===== DETECT MAJOR SECTIONS FROM EXERCISE SHEET =====
-  const majorSections = detectMajorSections(exerciseRows);
-  console.log('Major Sections Detected:', Object.keys(majorSections));
-
-  // ===== DETECT COLUMN MAPPING =====
+  // ===== DETECT COLUMN MAPPING FIRST =====
   const columnMap = detectColumnMapping(exerciseRows);
   console.log('Column Mapping:', columnMap);
+
+  // ===== DETECT MAJOR SECTIONS FROM EXERCISE SHEET =====
+  const majorSections = detectMajorSections(exerciseRows, columnMap);
+  console.log('Major Sections Detected:', Object.keys(majorSections));
 
   // ===== PARSE ROADMAP =====
   const roadmapData = parseRoadmapSmart(roadmap, majorSections);
@@ -570,17 +570,17 @@ function parseExcelSmart(data) {
 // ============================================================
 // DETECT MAJOR SECTIONS
 // ============================================================
-function detectMajorSections(rows) {
+function detectMajorSections(rows, columnMap) {
   const sections = {};
   let currentMajor = null;
   let headerRowFound = false;
   let exerciseStartIndex = -1;
 
   const majorKeywords = [
-    { keyword: 'Upper A', aliases: ['الجزء العلوي (Upper A)', 'علوي (Upper A)'] },
-    { keyword: 'Upper B', aliases: ['الجزء العلوي (Upper B)', 'علوي (Upper B)'] },
-    { keyword: 'Lower A', aliases: ['الجزء السفلي (Lower A & B)', 'سفلي (Lower A)', 'Lower A & B'] },
-    { keyword: 'Lower B', aliases: ['سفلي (Lower B)'] }
+    { keyword: 'Upper A', aliases: ['الجزء العلوي (Upper A)', 'علوي (Upper A)', 'Upper A'] },
+    { keyword: 'Upper B', aliases: ['الجزء العلوي (Upper B)', 'علوي (Upper B)', 'Upper B'] },
+    { keyword: 'Lower A', aliases: ['الجزء السفلي (Lower A & B)', 'سفلي (Lower A)', 'Lower A & B', 'Lower A'] },
+    { keyword: 'Lower B', aliases: ['سفلي (Lower B)', 'Lower B'] }
   ];
 
   for (let i = 0; i < rows.length; i++) {
@@ -614,7 +614,7 @@ function detectMajorSections(rows) {
       continue;
     }
 
-    // Check for exercise header row (contains "اسم التمرين" or "Exercise")
+    // Check for exercise header row
     if (currentMajor && row.some(cell => 
       String(cell || '').includes('اسم التمرين') || 
       String(cell || '').includes('Exercise') ||
@@ -623,11 +623,6 @@ function detectMajorSections(rows) {
       headerRowFound = true;
       exerciseStartIndex = i + 1;
       continue;
-    }
-
-    // If we're past the header and have exercises, collect them
-    if (currentMajor && headerRowFound && i >= exerciseStartIndex) {
-      // Continue collecting - we'll save when we hit next section
     }
   }
 
@@ -703,7 +698,7 @@ function collectExercises(rows, startIdx, endIdx, columnMap) {
     // Skip empty rows
     if (!rowText.trim()) continue;
 
-    // Skip if this row contains a section header (stop collecting)
+    // Skip if this row contains a section header
     if (row.some(cell => 
       String(cell || '').includes('الجزء العلوي') || 
       String(cell || '').includes('الجزء السفلي') ||
