@@ -310,9 +310,9 @@ document.getElementById('apiUrl').addEventListener('change', function() {
 // API CALLS
 // ============================================================
 async function callApi(action, data = {}) {
-  const url = document.getElementById('apiUrl').value.trim();
+  const baseUrl = document.getElementById('apiUrl').value.trim();
 
-  if (!url) {
+  if (!baseUrl) {
     showMessage(
       'addMessage',
       'Please enter your Google Apps Script URL',
@@ -322,17 +322,25 @@ async function callApi(action, data = {}) {
   }
 
   try {
+    // Build GET parameters
     const params = new URLSearchParams({
       action: action,
       ...data
     });
 
-    const response = await fetch(url, {
-      method: 'POST',
-      body: params
+    // Send GET request
+    const response = await fetch(`${baseUrl}?${params.toString()}`, {
+      method: 'GET'
     });
 
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
     const result = await response.json();
+
+    console.log('API Response:', result);
+
     return result;
 
   } catch (error) {
@@ -346,8 +354,7 @@ async function callApi(action, data = {}) {
 
     return null;
   }
-}
-// ============================================================
+}// ============================================================
 // LOAD USERS
 // ============================================================
 async function loadUsers() {
