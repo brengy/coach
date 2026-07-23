@@ -44,6 +44,10 @@
     border: 1px solid #d1d5db;
     border-radius: 8px;
     font-size: 14px;
+    background: white;
+  }
+  .form-group select {
+    cursor: pointer;
   }
   .form-row {
     display: grid;
@@ -99,6 +103,21 @@
   .btn-secondary:hover {
     background: #4b5563;
   }
+  .btn-sm {
+    padding: 6px 12px;
+    font-size: 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .btn-sm.edit {
+    background: #dbeafe;
+    color: #1e40af;
+  }
+  .btn-sm.delete {
+    background: #fee2e2;
+    color: #991b1b;
+  }
   .message {
     padding: 12px;
     border-radius: 8px;
@@ -128,42 +147,6 @@
     margin: 0 -24px 16px -24px;
     padding-left: 24px;
   }
-  .workout-list {
-    margin-top: 16px;
-  }
-  .workout-item {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    gap: 12px;
-    padding: 12px;
-    border-bottom: 1px solid #e5e7eb;
-    align-items: center;
-  }
-  .workout-item .info {
-    font-size: 14px;
-  }
-  .workout-item .info strong {
-    color: #111827;
-  }
-  .workout-item .actions {
-    display: flex;
-    gap: 8px;
-  }
-  .btn-sm {
-    padding: 6px 12px;
-    font-size: 12px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-  }
-  .btn-sm.edit {
-    background: #dbeafe;
-    color: #1e40af;
-  }
-  .btn-sm.delete {
-    background: #fee2e2;
-    color: #991b1b;
-  }
   .setup-hint {
     background: #fef3c7;
     border-left: 4px solid #f59e0b;
@@ -190,34 +173,6 @@
     padding: 10px;
     border: 1px solid #e5e7eb;
   }
-  .status-bar {
-    padding: 8px 16px;
-    border-radius: 8px;
-    margin: 8px 0;
-    font-size: 14px;
-  }
-  .status-bar.info {
-    background: #dbeafe;
-    color: #1e40af;
-  }
-  .status-bar.success {
-    background: #d1fae5;
-    color: #065f46;
-  }
-  .status-bar.error {
-    background: #fee2e2;
-    color: #991b1b;
-  }
-  .status-bar.warning {
-    background: #fef3c7;
-    color: #92400e;
-  }
-  .flex-row {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    align-items: center;
-  }
   .tag {
     display: inline-block;
     background: #dbeafe;
@@ -226,6 +181,12 @@
     font-size: 12px;
     color: #1e40af;
     margin: 2px;
+  }
+  .flex-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
   }
   @media (max-width: 600px) {
     .form-row, .form-row-3 {
@@ -447,7 +408,6 @@
       <button class="btn btn-success" onclick="addWorkout()">➕ Add/Update Exercise</button>
       <button class="btn btn-danger" onclick="deleteWorkout()">🗑️ Delete Exercise</button>
       <button class="btn btn-warning" onclick="clearForm()">🔄 Clear Form</button>
-      <button class="btn btn-secondary" onclick="loadExerciseForEdit()">📋 Load for Edit</button>
     </div>
     <div id="addMessage" class="message"></div>
   </div>
@@ -475,7 +435,6 @@
 // ============================================================
 const STORAGE_KEY = 'coach_api_url';
 
-// Load saved API URL
 const savedUrl = localStorage.getItem(STORAGE_KEY);
 if (savedUrl) {
   document.getElementById('apiUrl').value = savedUrl;
@@ -564,7 +523,6 @@ async function loadUsers() {
         ).join(' ')}
       `;
       
-      // Update datalists
       userSuggestions.innerHTML = result.users.map(u => 
         `<option value="${u}">`
       ).join('');
@@ -609,7 +567,6 @@ async function addWorkout() {
   if (result && result.status === 'success') {
     showStatus('✅ ' + result.message, 'success');
     loadUsers();
-    // Auto-refresh view if viewing this user
     const viewUser = document.getElementById('viewUsername').value.trim();
     if (viewUser === data.username) {
       viewWorkout();
@@ -641,7 +598,6 @@ async function deleteWorkout() {
   if (result && result.status === 'success') {
     showStatus('✅ ' + result.message, 'success');
     loadUsers();
-    // Auto-refresh view if viewing this user
     const viewUser = document.getElementById('viewUsername').value.trim();
     if (viewUser === data.username) {
       viewWorkout();
@@ -711,15 +667,6 @@ function refreshView() {
 }
 
 // ============================================================
-// LOAD EXERCISE FOR EDIT (from view table click)
-// ============================================================
-function loadExerciseForEdit() {
-  // This is a helper - can be triggered from the table
-  // For now, just show a message
-  showStatus('Click on any row in the table below to load it for editing (coming soon)', 'info');
-}
-
-// ============================================================
 // CLEAR FORM
 // ============================================================
 function clearForm() {
@@ -745,7 +692,6 @@ function showStatus(text, type = 'info') {
   statusBar.className = 'message ' + type;
   statusBar.style.display = 'block';
   
-  // Auto-clear after 8 seconds for success/info
   if (type === 'success' || type === 'info') {
     setTimeout(() => {
       if (statusBar.textContent === text) {
@@ -759,7 +705,6 @@ function showStatus(text, type = 'info') {
 // KEYBOARD SHORTCUTS
 // ============================================================
 document.addEventListener('keydown', function(e) {
-  // Ctrl+Enter to add workout
   if (e.ctrlKey && e.key === 'Enter') {
     e.preventDefault();
     addWorkout();
@@ -772,7 +717,6 @@ document.addEventListener('keydown', function(e) {
 window.onload = function() {
   if (document.getElementById('apiUrl').value.trim()) {
     showStatus('⚡ Ready. Click "Load Users" or enter a username to view.', 'info');
-    // Auto-load users if URL is set
     setTimeout(() => loadUsers(), 500);
   } else {
     showStatus('⚡ Enter your Web App URL and click "Load Users"', 'info');
