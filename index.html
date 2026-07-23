@@ -731,6 +731,9 @@ function collectExercises(rows, startIdx, endIdx, columnMap) {
 // ============================================================
 // PARSE ROADMAP - FIXED
 // ============================================================
+// ============================================================
+// PARSE ROADMAP - FIXED (Week is in Column 1, not 0)
+// ============================================================
 function parseRoadmapSmart(rows, majorSections) {
   const output = [];
   
@@ -758,8 +761,9 @@ function parseRoadmapSmart(rows, majorSections) {
   for (let i = headerIndex + 1; i < rows.length; i++) {
     const row = rows[i];
     
-    // Get week name from first column
-    const week = String(row[0] || '').trim();
+    // Get week name from column 1 (index 1), NOT column 0
+    // Column 0 is often empty in this format
+    const week = String(row[1] || '').trim();
     console.log('Processing row:', i, 'Week:', week);
     
     if (!week) {
@@ -767,15 +771,16 @@ function parseRoadmapSmart(rows, majorSections) {
       continue;
     }
 
-    // Check days 1-7 (columns 1-7)
-    for (let dayIndex = 1; dayIndex <= 7; dayIndex++) {
+    // Check days 1-7 (columns 2-8, indices 2-8)
+    // Since column 0 and 1 are week labels, days start at index 2
+    for (let dayIndex = 2; dayIndex <= 8; dayIndex++) {
       // Make sure we have data in this column
       if (row.length <= dayIndex) continue;
       
       const dayName = String(row[dayIndex] || '').trim();
       if (!dayName) continue;
 
-      console.log('  Day ' + dayIndex + ':', dayName);
+      console.log('  Day ' + (dayIndex - 1) + ':', dayName);
 
       // Skip rest days
       if (dayName.includes('راحة') || dayName.toLowerCase().includes('rest')) {
@@ -819,7 +824,9 @@ function parseRoadmapSmart(rows, majorSections) {
   console.log('Total roadmap entries:', output.length);
   return output;
 }
-// ============================================================
+ 
+ 
+ // ============================================================
 // DETECT MAJOR FROM TEXT
 // ============================================================
 function detectMajorFromText(text) {
