@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Coach - Workout Builder</title>
- <!-- Barbell Favicon -->
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect x='35' y='45' width='30' height='10' rx='2' fill='%23444'/><rect x='0' y='42' width='20' height='16' rx='3' fill='%23666'/><rect x='80' y='42' width='20' height='16' rx='3' fill='%23666'/></svg>">
+<!-- Simple Dumbbell Favicon -->
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect x='10' y='35' width='80' height='30' rx='5' fill='%23333'/><rect x='0' y='25' width='20' height='50' rx='5' fill='%23555'/><rect x='80' y='25' width='20' height='50' rx='5' fill='%23555'/></svg>">
 <style>
   * { box-sizing: border-box; }
   body {
@@ -92,6 +92,13 @@
   .btn-warning:hover {
     background: #d97706;
   }
+  .btn-secondary {
+    background: #6b7280;
+    color: white;
+  }
+  .btn-secondary:hover {
+    background: #4b5563;
+  }
   .message {
     padding: 12px;
     border-radius: 8px;
@@ -107,6 +114,11 @@
     display: block;
     background: #fee2e2;
     color: #991b1b;
+  }
+  .message.info {
+    display: block;
+    background: #dbeafe;
+    color: #1e40af;
   }
   .section-title {
     background: #111827;
@@ -178,6 +190,43 @@
     padding: 10px;
     border: 1px solid #e5e7eb;
   }
+  .status-bar {
+    padding: 8px 16px;
+    border-radius: 8px;
+    margin: 8px 0;
+    font-size: 14px;
+  }
+  .status-bar.info {
+    background: #dbeafe;
+    color: #1e40af;
+  }
+  .status-bar.success {
+    background: #d1fae5;
+    color: #065f46;
+  }
+  .status-bar.error {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+  .status-bar.warning {
+    background: #fef3c7;
+    color: #92400e;
+  }
+  .flex-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .tag {
+    display: inline-block;
+    background: #dbeafe;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    color: #1e40af;
+    margin: 2px;
+  }
   @media (max-width: 600px) {
     .form-row, .form-row-3 {
       grid-template-columns: 1fr;
@@ -202,10 +251,13 @@
     </div>
     <div class="form-group">
       <label>Google Apps Script Web App URL</label>
-      <input type="text" id="apiUrl" placeholder="https://script.google.com/macros/s/AKfycbwNCZAjL8vG3hoO_eFNbeRV4Qq1m71GZJtgCvwJ4rpc73Bpm3JQ3epxl93AnRpqpX1gOA/exec" style="width:100%;padding:10px;border:1px solid #d1d5db;border-radius:8px;">
+      <input type="text" id="apiUrl" placeholder="https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec" style="width:100%;padding:10px;border:1px solid #d1d5db;border-radius:8px;">
       <small style="color:#6b7280;">Deploy your script and paste the URL here</small>
     </div>
-    <button class="btn btn-primary" onclick="loadUsers()">📥 Load Users</button>
+    <div class="flex-row">
+      <button class="btn btn-primary" onclick="loadUsers()">📥 Load Users</button>
+      <button class="btn btn-secondary" onclick="testConnection()">🔌 Test Connection</button>
+    </div>
     <div id="userList" style="margin-top:12px;"></div>
   </div>
 
@@ -217,29 +269,95 @@
     <div class="form-row">
       <div class="form-group">
         <label>Username *</label>
-        <input type="text" id="username" placeholder="e.g., john_doe">
+        <input type="text" id="username" placeholder="e.g., john_doe" list="userSuggestions">
+        <datalist id="userSuggestions"></datalist>
       </div>
       <div class="form-group">
         <label>Week *</label>
-        <input type="text" id="week" placeholder="e.g., Week 1">
+        <select id="week">
+          <option value="">-- Select Week --</option>
+          <option value="Week 1">Week 1</option>
+          <option value="Week 2">Week 2</option>
+          <option value="Week 3">Week 3</option>
+          <option value="Week 4">Week 4</option>
+          <option value="Week 5">Week 5</option>
+          <option value="Week 6">Week 6</option>
+          <option value="Week 7">Week 7</option>
+          <option value="Week 8">Week 8</option>
+          <option value="Week 9">Week 9</option>
+          <option value="Week 10">Week 10</option>
+          <option value="Week 11">Week 11</option>
+          <option value="Week 12">Week 12</option>
+        </select>
       </div>
     </div>
     
     <div class="form-row">
       <div class="form-group">
         <label>Day *</label>
-        <input type="text" id="day" placeholder="e.g., Day 1, Monday">
+        <select id="day">
+          <option value="">-- Select Day --</option>
+          <option value="Day 1">Day 1</option>
+          <option value="Day 2">Day 2</option>
+          <option value="Day 3">Day 3</option>
+          <option value="Day 4">Day 4</option>
+          <option value="Day 5">Day 5</option>
+          <option value="Day 6">Day 6</option>
+          <option value="Day 7">Day 7</option>
+          <option value="Monday">Monday</option>
+          <option value="Tuesday">Tuesday</option>
+          <option value="Wednesday">Wednesday</option>
+          <option value="Thursday">Thursday</option>
+          <option value="Friday">Friday</option>
+          <option value="Saturday">Saturday</option>
+          <option value="Sunday">Sunday</option>
+          <option value="Rest Day">Rest Day</option>
+        </select>
       </div>
       <div class="form-group">
         <label>Major / Workout Name</label>
-        <input type="text" id="major" placeholder="e.g., Upper A - Chest Focus">
+        <select id="major">
+          <option value="">-- Select Major --</option>
+          <option value="Upper A - Chest & Back">Upper A - Chest & Back</option>
+          <option value="Upper B - Shoulders & Lats">Upper B - Shoulders & Lats</option>
+          <option value="Lower A - Quads & Glutes">Lower A - Quads & Glutes</option>
+          <option value="Lower B - Hamstrings & Glutes">Lower B - Hamstrings & Glutes</option>
+          <option value="Full Body">Full Body</option>
+          <option value="Push Day">Push Day</option>
+          <option value="Pull Day">Pull Day</option>
+          <option value="Leg Day">Leg Day</option>
+          <option value="Cardio">Cardio</option>
+          <option value="Active Recovery">Active Recovery</option>
+        </select>
       </div>
     </div>
     
     <div class="form-row">
       <div class="form-group">
         <label>Exercise (English) *</label>
-        <input type="text" id="exercise" placeholder="e.g., Incline Barbell Chest Press">
+        <input type="text" id="exercise" placeholder="e.g., Incline Barbell Chest Press" list="exerciseSuggestions">
+        <datalist id="exerciseSuggestions">
+          <option value="Incline Barbell Chest Press">
+          <option value="Flat Barbell Bench Press">
+          <option value="Dumbbell Bench Press">
+          <option value="Lat Pulldown">
+          <option value="Seated Cable Row">
+          <option value="Bent Over Row">
+          <option value="Shoulder Press">
+          <option value="Lateral Raises">
+          <option value="Front Raises">
+          <option value="Bicep Curls">
+          <option value="Tricep Pushdowns">
+          <option value="Squats">
+          <option value="Deadlifts">
+          <option value="Leg Press">
+          <option value="Leg Extensions">
+          <option value="Leg Curls">
+          <option value="Calf Raises">
+          <option value="Planks">
+          <option value="Push-ups">
+          <option value="Pull-ups">
+        </datalist>
       </div>
       <div class="form-group">
         <label>Exercise (Arabic)</label>
@@ -249,41 +367,102 @@
     
     <div class="form-group">
       <label>Target Muscle</label>
-      <input type="text" id="muscle" placeholder="e.g., الصدر العلوي">
+      <select id="muscle">
+        <option value="">-- Select Muscle --</option>
+        <option value="الصدر العلوي">الصدر العلوي</option>
+        <option value="الصدر السفلي">الصدر السفلي</option>
+        <option value="الصدر الأوسط">الصدر الأوسط</option>
+        <option value="الصدر كامل">الصدر كامل</option>
+        <option value="الظهر / اللاتس">الظهر / اللاتس</option>
+        <option value="أعلى الظهر">أعلى الظهر</option>
+        <option value="وسط الظهر">وسط الظهر</option>
+        <option value="أسفل الظهر">أسفل الظهر</option>
+        <option value="الكتف الأمامي">الكتف الأمامي</option>
+        <option value="الكتف الجانبي">الكتف الجانبي</option>
+        <option value="الكتف الخلفي">الكتف الخلفي</option>
+        <option value="الكتف الجانبي والعلوي">الكتف الجانبي والعلوي</option>
+        <option value="البايسبس">البايسبس</option>
+        <option value="الترايسبس">الترايسبس</option>
+        <option value="الساعد">الساعد</option>
+        <option value="الفخذ الأمامي">الفخذ الأمامي</option>
+        <option value="الفخذ الخلفي">الفخذ الخلفي</option>
+        <option value="المؤخرة">المؤخرة</option>
+        <option value="الساق">الساق</option>
+        <option value="البطن">البطن</option>
+        <option value="الجذع">الجذع</option>
+        <option value="عضلة الساعد والباي">عضلة الساعد والباي</option>
+        <option value="الرأس الطويل للتراي">الرأس الطويل للتراي</option>
+        <option value="المجنص السفلي (Lats)">المجنص السفلي (Lats)</option>
+        <option value="الترابيس العلوية">الترابيس العلوية</option>
+        <option value="عزل الصدر">عزل الصدر</option>
+        <option value="عزل الأماميات">عزل الأماميات</option>
+        <option value="عزل الخلفيات">عزل الخلفيات</option>
+      </select>
     </div>
     
     <div class="form-row-3">
       <div class="form-group">
         <label>Sets</label>
-        <input type="text" id="sets" placeholder="3">
+        <select id="sets">
+          <option value="">--</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+        </select>
       </div>
       <div class="form-group">
         <label>Reps</label>
-        <input type="text" id="reps" placeholder="6-8">
+        <select id="reps">
+          <option value="">--</option>
+          <option value="4-6">4-6</option>
+          <option value="6-8">6-8</option>
+          <option value="8-10">8-10</option>
+          <option value="10-12">10-12</option>
+          <option value="12-15">12-15</option>
+          <option value="15-20">15-20</option>
+          <option value="AMRAP">AMRAP</option>
+        </select>
       </div>
       <div class="form-group">
         <label>Rest</label>
-        <input type="text" id="rest" placeholder="2.5-3 دقائق">
+        <select id="rest">
+          <option value="">--</option>
+          <option value="30 ثانية">30 ثانية</option>
+          <option value="45 ثانية">45 ثانية</option>
+          <option value="60 ثانية">60 ثانية</option>
+          <option value="90 ثانية">90 ثانية</option>
+          <option value="2 دقائق">2 دقائق</option>
+          <option value="2.5-3 دقائق">2.5-3 دقائق</option>
+          <option value="3 دقائق">3 دقائق</option>
+          <option value="3-4 دقائق">3-4 دقائق</option>
+          <option value="4-5 دقائق">4-5 دقائق</option>
+        </select>
       </div>
     </div>
     
-    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+    <div class="flex-row">
       <button class="btn btn-success" onclick="addWorkout()">➕ Add/Update Exercise</button>
       <button class="btn btn-danger" onclick="deleteWorkout()">🗑️ Delete Exercise</button>
       <button class="btn btn-warning" onclick="clearForm()">🔄 Clear Form</button>
+      <button class="btn btn-secondary" onclick="loadExerciseForEdit()">📋 Load for Edit</button>
     </div>
     <div id="addMessage" class="message"></div>
   </div>
 
   <div class="card">
     <div class="section-title">
-      <h2 style="margin:0;color:white;">📋 View Workout Plan</h2>
+      <h2 style="margin:0;color:white;">📋 View & Manage Workouts</h2>
     </div>
     <div class="form-group">
       <label>Select Username to View</label>
-      <div style="display:flex; gap:10px;">
-        <input type="text" id="viewUsername" placeholder="Enter username" style="flex:1;padding:10px;border:1px solid #d1d5db;border-radius:8px;">
+      <div class="flex-row">
+        <input type="text" id="viewUsername" placeholder="Enter username" style="flex:1;padding:10px;border:1px solid #d1d5db;border-radius:8px;" list="viewUserSuggestions">
+        <datalist id="viewUserSuggestions"></datalist>
         <button class="btn btn-primary" onclick="viewWorkout()">👁️ View</button>
+        <button class="btn btn-secondary" onclick="refreshView()">🔄 Refresh</button>
       </div>
     </div>
     <div id="viewContent"></div>
@@ -311,24 +490,17 @@ document.getElementById('apiUrl').addEventListener('change', function() {
 // ============================================================
 async function callApi(action, data = {}) {
   const baseUrl = document.getElementById('apiUrl').value.trim();
-
   if (!baseUrl) {
-    showMessage(
-      'addMessage',
-      'Please enter your Google Apps Script URL',
-      'error'
-    );
+    showStatus('Please enter your Google Apps Script URL', 'error');
     return null;
   }
 
   try {
-    // Build GET parameters
     const params = new URLSearchParams({
       action: action,
       ...data
     });
 
-    // Send GET request
     const response = await fetch(`${baseUrl}?${params.toString()}`, {
       method: 'GET'
     });
@@ -338,37 +510,73 @@ async function callApi(action, data = {}) {
     }
 
     const result = await response.json();
-
     console.log('API Response:', result);
-
     return result;
 
   } catch (error) {
     console.error('API Error:', error);
-
-    showMessage(
-      'addMessage',
-      '❌ Error: ' + error.message,
-      'error'
-    );
-
+    showStatus('❌ Error: ' + error.message, 'error');
     return null;
   }
-}// ============================================================
+}
+
+// ============================================================
+// TEST CONNECTION
+// ============================================================
+async function testConnection() {
+  const url = document.getElementById('apiUrl').value.trim();
+  if (!url) {
+    showStatus('Please enter your Web App URL', 'error');
+    return;
+  }
+  
+  showStatus('🔄 Testing connection...', 'info');
+  
+  try {
+    const result = await callApi('test');
+    if (result && result.status === 'success') {
+      showStatus('✅ Connection successful! API is working correctly.', 'success');
+    } else {
+      showStatus('⚠️ API returned: ' + (result?.message || 'Unknown response'), 'warning');
+    }
+  } catch (error) {
+    showStatus('❌ Connection failed: ' + error.message, 'error');
+  }
+}
+
+// ============================================================
 // LOAD USERS
 // ============================================================
 async function loadUsers() {
+  showStatus('🔄 Loading users...', 'info');
+  
   const result = await callApi('getUsers');
   if (result && result.status === 'success') {
     const userList = document.getElementById('userList');
+    const userSuggestions = document.getElementById('userSuggestions');
+    const viewUserSuggestions = document.getElementById('viewUserSuggestions');
+    
     if (result.users && result.users.length > 0) {
       userList.innerHTML = `
-        <strong>Users:</strong> ${result.users.map(u => 
-          `<span style="display:inline-block;background:#dbeafe;padding:4px 12px;border-radius:12px;margin:4px;">${u}</span>`
+        <strong>👥 Users (${result.users.length}):</strong><br>
+        ${result.users.map(u => 
+          `<span class="tag">${u}</span>`
         ).join(' ')}
       `;
+      
+      // Update datalists
+      userSuggestions.innerHTML = result.users.map(u => 
+        `<option value="${u}">`
+      ).join('');
+      
+      viewUserSuggestions.innerHTML = result.users.map(u => 
+        `<option value="${u}">`
+      ).join('');
+      
+      showStatus(`✅ Loaded ${result.users.length} users`, 'success');
     } else {
       userList.innerHTML = '<p style="color:#6b7280;">No users found. Add your first workout!</p>';
+      showStatus('ℹ️ No users found', 'info');
     }
   }
 }
@@ -391,16 +599,21 @@ async function addWorkout() {
   };
   
   if (!data.username || !data.week || !data.day || !data.exercise) {
-    showMessage('addMessage', 'Please fill in Username, Week, Day, and Exercise', 'error');
+    showStatus('Please fill in Username, Week, Day, and Exercise', 'error');
     return;
   }
   
+  showStatus('🔄 Saving workout...', 'info');
+  
   const result = await callApi('addWorkout', data);
   if (result && result.status === 'success') {
-    showMessage('addMessage', '✅ ' + result.message, 'success');
+    showStatus('✅ ' + result.message, 'success');
     loadUsers();
-    // Optionally clear form
-    // clearForm();
+    // Auto-refresh view if viewing this user
+    const viewUser = document.getElementById('viewUsername').value.trim();
+    if (viewUser === data.username) {
+      viewWorkout();
+    }
   }
 }
 
@@ -416,16 +629,23 @@ async function deleteWorkout() {
   };
   
   if (!data.username || !data.week || !data.day || !data.exercise) {
-    showMessage('addMessage', 'Please fill in Username, Week, Day, and Exercise to delete', 'error');
+    showStatus('Please fill in Username, Week, Day, and Exercise to delete', 'error');
     return;
   }
   
   if (!confirm(`Delete "${data.exercise}" for ${data.username}?`)) return;
   
+  showStatus('🔄 Deleting workout...', 'info');
+  
   const result = await callApi('deleteWorkout', data);
   if (result && result.status === 'success') {
-    showMessage('addMessage', '✅ ' + result.message, 'success');
+    showStatus('✅ ' + result.message, 'success');
     loadUsers();
+    // Auto-refresh view if viewing this user
+    const viewUser = document.getElementById('viewUsername').value.trim();
+    if (viewUser === data.username) {
+      viewWorkout();
+    }
   }
 }
 
@@ -435,29 +655,31 @@ async function deleteWorkout() {
 async function viewWorkout() {
   const username = document.getElementById('viewUsername').value.trim();
   if (!username) {
-    showMessage('addMessage', 'Please enter a username', 'error');
+    showStatus('Please enter a username', 'error');
     return;
   }
+  
+  showStatus('🔄 Loading workout for ' + username + '...', 'info');
   
   const result = await callApi('getWorkoutData', { username });
   if (result && result.status === 'success') {
     const container = document.getElementById('viewContent');
     
     if (!result.sections || result.sections.length === 0) {
-      container.innerHTML = '<p style="color:#6b7280;">No workout data found for this user</p>';
+      container.innerHTML = '<p style="color:#6b7280;padding:20px;">No workout data found for this user</p>';
+      showStatus('ℹ️ No workouts found for ' + username, 'info');
       return;
     }
     
-    let html = '<div class="table-container"><table>';
+    let html = `<div style="margin-bottom:12px;font-weight:bold;color:#1e40af;">📋 ${result.sections.length} days of workouts</div>`;
+    html += '<div class="table-container"><table>';
     html += '<tr><th>Week</th><th>Day</th><th>Major</th><th>Exercise</th><th>Arabic</th><th>Muscle</th><th>Sets</th><th>Reps</th><th>Rest</th></tr>';
     
-    // We need to get the raw data - let's make another call
-    // For now, display sections
     result.sections.forEach(section => {
       section.exercises.forEach(ex => {
         html += `<tr>
           <td>${ex.week || ''}</td>
-          <td>${section.title}</td>
+          <td><strong>${section.title}</strong></td>
           <td>${ex.major || ''}</td>
           <td>${ex.eng}</td>
           <td>${ex.arb || ''}</td>
@@ -472,8 +694,29 @@ async function viewWorkout() {
     html += '</table></div>';
     container.innerHTML = html;
     
-    showMessage('addMessage', `✅ Loaded workout plan for ${username}`, 'success');
+    showStatus(`✅ Loaded workout plan for ${username} (${result.sections.length} days)`, 'success');
   }
+}
+
+// ============================================================
+// REFRESH VIEW
+// ============================================================
+function refreshView() {
+  const username = document.getElementById('viewUsername').value.trim();
+  if (username) {
+    viewWorkout();
+  } else {
+    showStatus('Please enter a username first', 'warning');
+  }
+}
+
+// ============================================================
+// LOAD EXERCISE FOR EDIT (from view table click)
+// ============================================================
+function loadExerciseForEdit() {
+  // This is a helper - can be triggered from the table
+  // For now, just show a message
+  showStatus('Click on any row in the table below to load it for editing (coming soon)', 'info');
 }
 
 // ============================================================
@@ -490,26 +733,49 @@ function clearForm() {
   document.getElementById('sets').value = '';
   document.getElementById('reps').value = '';
   document.getElementById('rest').value = '';
+  showStatus('🔄 Form cleared', 'info');
 }
 
 // ============================================================
-// SHOW MESSAGE
+// SHOW STATUS
 // ============================================================
-function showMessage(elementId, text, type) {
-  const el = document.getElementById(elementId);
-  el.textContent = text;
-  el.className = 'message ' + type;
-  el.style.display = 'block';
+function showStatus(text, type = 'info') {
+  const statusBar = document.getElementById('addMessage');
+  statusBar.textContent = text;
+  statusBar.className = 'message ' + type;
+  statusBar.style.display = 'block';
   
-  setTimeout(() => {
-    el.style.display = 'none';
-  }, 5000);
+  // Auto-clear after 8 seconds for success/info
+  if (type === 'success' || type === 'info') {
+    setTimeout(() => {
+      if (statusBar.textContent === text) {
+        statusBar.style.display = 'none';
+      }
+    }, 8000);
+  }
 }
 
-// Load users on page load
+// ============================================================
+// KEYBOARD SHORTCUTS
+// ============================================================
+document.addEventListener('keydown', function(e) {
+  // Ctrl+Enter to add workout
+  if (e.ctrlKey && e.key === 'Enter') {
+    e.preventDefault();
+    addWorkout();
+  }
+});
+
+// ============================================================
+// INIT
+// ============================================================
 window.onload = function() {
   if (document.getElementById('apiUrl').value.trim()) {
-    loadUsers();
+    showStatus('⚡ Ready. Click "Load Users" or enter a username to view.', 'info');
+    // Auto-load users if URL is set
+    setTimeout(() => loadUsers(), 500);
+  } else {
+    showStatus('⚡ Enter your Web App URL and click "Load Users"', 'info');
   }
 };
 </script>
