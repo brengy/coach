@@ -311,28 +311,42 @@ document.getElementById('apiUrl').addEventListener('change', function() {
 // ============================================================
 async function callApi(action, data = {}) {
   const url = document.getElementById('apiUrl').value.trim();
+
   if (!url) {
-    showMessage('addMessage', 'Please enter your Google Apps Script URL', 'error');
+    showMessage(
+      'addMessage',
+      'Please enter your Google Apps Script URL',
+      'error'
+    );
     return null;
   }
-  
+
   try {
+    const params = new URLSearchParams({
+      action: action,
+      ...data
+    });
+
     const response = await fetch(url, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ action, ...data })
+      body: params
     });
-    
+
     const result = await response.json();
     return result;
+
   } catch (error) {
-    showMessage('addMessage', '❌ Error: ' + error.message, 'error');
+    console.error('API Error:', error);
+
+    showMessage(
+      'addMessage',
+      '❌ Error: ' + error.message,
+      'error'
+    );
+
     return null;
   }
 }
-
 // ============================================================
 // LOAD USERS
 // ============================================================
