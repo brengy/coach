@@ -734,6 +734,9 @@ function collectExercises(rows, startIdx, endIdx, columnMap) {
 // ============================================================
 // PARSE ROADMAP - FIXED (Week is in Column 1, not 0)
 // ============================================================
+// ============================================================
+// PARSE ROADMAP - CLEAN NAMES (Day 1, Week 1, etc.)
+// ============================================================
 function parseRoadmapSmart(rows, majorSections) {
   const output = [];
   
@@ -744,7 +747,6 @@ function parseRoadmapSmart(rows, majorSections) {
   for (let i = 0; i < rows.length; i++) {
     const row = rows[i];
     const rowText = row.map(cell => String(cell || '').trim()).join(' ');
-    // Look for both "الأسبوع" and "اليوم" to be sure it's the header
     if (rowText.includes('الأسبوع') && rowText.includes('اليوم')) {
       headerIndex = i;
       console.log('Found header at row:', i, rowText);
@@ -758,38 +760,44 @@ function parseRoadmapSmart(rows, majorSections) {
   }
 
   // Parse each week row (starting after header)
+  let weekCounter = 1;
   for (let i = headerIndex + 1; i < rows.length; i++) {
     const row = rows[i];
     
-    // Get week name from column 1 (index 1), NOT column 0
-    // Column 0 is often empty in this format
-    const week = String(row[1] || '').trim();
-    console.log('Processing row:', i, 'Week:', week);
+    // Get week name from column 1
+    const weekRaw = String(row[1] || '').trim();
+    console.log('Processing row:', i, 'Week raw:', weekRaw);
     
-    if (!week) {
+    if (!weekRaw) {
       console.log('Skipping empty week row');
       continue;
     }
 
+    // Map week to clean "Week X" format
+    const weekClean = 'Week ' + weekCounter;
+    weekCounter++;
+    console.log('Week mapped to:', weekClean);
+
     // Check days 1-7 (columns 2-8, indices 2-8)
-    // Since column 0 and 1 are week labels, days start at index 2
     for (let dayIndex = 2; dayIndex <= 8; dayIndex++) {
-      // Make sure we have data in this column
       if (row.length <= dayIndex) continue;
       
-      const dayName = String(row[dayIndex] || '').trim();
-      if (!dayName) continue;
+      const dayNameRaw = String(row[dayIndex] || '').trim();
+      if (!dayNameRaw) continue;
 
-      console.log('  Day ' + (dayIndex - 1) + ':', dayName);
+      // Map day to "Day X" format (1-7)
+      const dayNumber = dayIndex - 1; // 2 -> 1, 3 -> 2, etc.
+      const dayClean = 'Day ' + dayNumber;
+      console.log('  Day ' + dayNumber + ' raw:', dayNameRaw, '->', dayClean);
 
       // Skip rest days
-      if (dayName.includes('راحة') || dayName.toLowerCase().includes('rest')) {
+      if (dayNameRaw.includes('راحة') || dayNameRaw.toLowerCase().includes('rest')) {
         console.log('  -> Rest day, skipping');
         continue;
       }
 
       // Detect Major from day name
-      const major = detectMajorFromText(dayName);
+      const major = detectMajorFromText(dayNameRaw);
       console.log('  -> Detected major:', major);
       
       if (!major) {
@@ -807,8 +815,8 @@ function parseRoadmapSmart(rows, majorSections) {
       // Add all exercises for this major to this day
       majorSections[major].forEach(exercise => {
         output.push({
-          week: week,
-          day: dayName,
+          week: weekClean,
+          day: dayClean,
           major: major,
           exercise: exercise.exercise,
           arabic: exercise.arabic,
@@ -823,8 +831,7 @@ function parseRoadmapSmart(rows, majorSections) {
 
   console.log('Total roadmap entries:', output.length);
   return output;
-}
- 
+} 
  
  // ============================================================
 // DETECT MAJOR FROM TEXT
