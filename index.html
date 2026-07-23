@@ -1,2899 +1,968 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-
 <head>
-
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Coach - Workout Builder</title>
-
 <!-- Excel Reader -->
 <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-
-
 <style>
-
-* {
-  box-sizing: border-box;
-}
-
-
-body {
-
-  font-family: Arial, sans-serif;
-
-  background: #f4f6f8;
-
-  margin: 0;
-
-  padding: 20px;
-
-}
-
-
-.container {
-
-  max-width: 1100px;
-
-  margin: 0 auto;
-
-}
-
-
-.card {
-
-  background: white;
-
-  border-radius: 12px;
-
-  padding: 24px;
-
-  margin-bottom: 20px;
-
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-
-}
-
-
-.card h2 {
-
-  margin-top: 0;
-
-  color: #111827;
-
-}
-
-
-.form-group {
-
-  margin-bottom: 16px;
-
-}
-
-
-.form-group label {
-
-  display: block;
-
-  font-weight: 600;
-
-  margin-bottom: 4px;
-
-  color: #374151;
-
-}
-
-
-.form-group input,
-.form-group select {
-
-  width: 100%;
-
-  padding: 10px;
-
-  border: 1px solid #d1d5db;
-
-  border-radius: 8px;
-
-  font-size: 14px;
-
-}
-
-
-.form-row {
-
-  display: grid;
-
-  grid-template-columns: 1fr 1fr;
-
-  gap: 16px;
-
-}
-
-
-.form-row-3 {
-
-  display: grid;
-
-  grid-template-columns: 1fr 1fr 1fr;
-
-  gap: 16px;
-
-}
-
-
-.btn {
-
-  padding: 12px 24px;
-
-  border: none;
-
-  border-radius: 8px;
-
-  font-size: 16px;
-
-  font-weight: bold;
-
-  cursor: pointer;
-
-  transition: 0.2s;
-
-}
-
-
-.btn-primary {
-
-  background: #2563eb;
-
-  color: white;
-
-}
-
-
-.btn-primary:hover {
-
-  background: #1d4ed8;
-
-}
-
-
-.btn-success {
-
-  background: #15803d;
-
-  color: white;
-
-}
-
-
-.btn-success:hover {
-
-  background: #166534;
-
-}
-
-
-.btn-danger {
-
-  background: #dc2626;
-
-  color: white;
-
-}
-
-
-.btn-danger:hover {
-
-  background: #b91c1c;
-
-}
-
-
-.btn-warning {
-
-  background: #f59e0b;
-
-  color: white;
-
-}
-
-
-.btn-warning:hover {
-
-  background: #d97706;
-
-}
-
-
-.message {
-
-  padding: 12px;
-
-  border-radius: 8px;
-
-  margin-top: 12px;
-
-  display: none;
-
-}
-
-
-.message.success {
-
-  display: block;
-
-  background: #d1fae5;
-
-  color: #065f46;
-
-}
-
-
-.message.error {
-
-  display: block;
-
-  background: #fee2e2;
-
-  color: #991b1b;
-
-}
-
-
-.section-title {
-
-  background: #111827;
-
-  color: white;
-
-  padding: 12px 16px;
-
-  border-radius: 8px 8px 0 0;
-
-  margin: 0 -24px 16px -24px;
-
-  padding-left: 24px;
-
-}
-
-
-.setup-hint {
-
-  background: #fef3c7;
-
-  border-left: 4px solid #f59e0b;
-
-  padding: 12px 16px;
-
-  border-radius: 8px;
-
-  margin-bottom: 16px;
-
-  line-height: 1.6;
-
-}
-
-
-.table-container {
-
-  overflow-x: auto;
-
-  margin-top: 16px;
-
-}
-
-
-table {
-
-  width: 100%;
-
-  border-collapse: collapse;
-
-  font-size: 14px;
-
-}
-
-
-th {
-
-  background: #f3f4f6;
-
-  padding: 10px;
-
-  text-align: left;
-
-  border: 1px solid #e5e7eb;
-
-  white-space: nowrap;
-
-}
-
-
-td {
-
-  padding: 10px;
-
-  border: 1px solid #e5e7eb;
-
-}
-
-
-.import-summary {
-
-  margin-top: 16px;
-
-  padding: 15px;
-
-  background: #eff6ff;
-
-  border-radius: 8px;
-
-  display: none;
-
-}
-
-
-@media (max-width: 600px) {
-
-  .form-row,
-  .form-row-3 {
-
-    grid-template-columns: 1fr;
-
+  * { box-sizing: border-box; }
+  body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
+    margin: 0;
+    padding: 20px;
   }
-
-}
-
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  .card h2 {
+    margin-top: 0;
+    color: #111827;
+  }
+  .form-group {
+    margin-bottom: 16px;
+  }
+  .form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: #374151;
+  }
+  .form-group input, .form-group select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+  }
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .form-row-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+  }
+  .btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  .btn-primary {
+    background: #2563eb;
+    color: white;
+  }
+  .btn-primary:hover {
+    background: #1d4ed8;
+  }
+  .btn-success {
+    background: #15803d;
+    color: white;
+  }
+  .btn-success:hover {
+    background: #166534;
+  }
+  .btn-danger {
+    background: #dc2626;
+    color: white;
+  }
+  .btn-danger:hover {
+    background: #b91c1c;
+  }
+  .btn-warning {
+    background: #f59e0b;
+    color: white;
+  }
+  .btn-warning:hover {
+    background: #d97706;
+  }
+  .btn-secondary {
+    background: #6b7280;
+    color: white;
+  }
+  .btn-secondary:hover {
+    background: #4b5563;
+  }
+  .btn-purple {
+    background: #7c3aed;
+    color: white;
+  }
+  .btn-purple:hover {
+    background: #6d28d9;
+  }
+  .message {
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 12px;
+    display: none;
+  }
+  .message.success {
+    display: block;
+    background: #d1fae5;
+    color: #065f46;
+  }
+  .message.error {
+    display: block;
+    background: #fee2e2;
+    color: #991b1b;
+  }
+  .message.info {
+    display: block;
+    background: #dbeafe;
+    color: #1e40af;
+  }
+  .section-title {
+    background: #111827;
+    color: white;
+    padding: 12px 16px;
+    border-radius: 8px 8px 0 0;
+    margin: 0 -24px 16px -24px;
+    padding-left: 24px;
+  }
+  .setup-hint {
+    background: #fef3c7;
+    border-left: 4px solid #f59e0b;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    line-height: 1.6;
+  }
+  .table-container {
+    overflow-x: auto;
+    margin-top: 16px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  th {
+    background: #f3f4f6;
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #e5e7eb;
+    white-space: nowrap;
+  }
+  td {
+    padding: 10px;
+    border: 1px solid #e5e7eb;
+  }
+  .import-summary {
+    margin-top: 16px;
+    padding: 15px;
+    background: #eff6ff;
+    border-radius: 8px;
+    display: none;
+  }
+  .import-summary.visible {
+    display: block;
+  }
+  .tag {
+    display: inline-block;
+    background: #dbeafe;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    color: #1e40af;
+    margin: 2px;
+  }
+  .flex-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  @media (max-width: 600px) {
+    .form-row, .form-row-3 {
+      grid-template-columns: 1fr;
+    }
+  }
 </style>
-
 </head>
-
-
 <body>
 
-
 <div class="container">
+  <h1>👨‍🏫 Coach - Workout Builder</h1>
+  <p>Create and manage workout plans for your clients</p>
 
+  <!-- SETUP -->
+  <div class="card">
+    <div class="section-title">
+      <h2 style="margin:0;color:white;">🔧 Setup</h2>
+    </div>
+    <div class="setup-hint">
+      <strong>Google Sheet Structure:</strong><br>
+      Sheet name: <strong>WorkoutData</strong><br><br>
+      Columns: <code>Username | Week | Day | Major | Exercise | Arabic | Muscle | Sets | Reps | Rest</code>
+    </div>
+    <div class="form-group">
+      <label>Google Apps Script Web App URL</label>
+      <input type="text" id="apiUrl" placeholder="https://script.google.com/macros/s/....../exec">
+      <small style="color:#6b7280;">Deploy your Apps Script as a Web App and paste the URL here.</small>
+    </div>
+    <button class="btn btn-primary" onclick="loadUsers()">📥 Load Users</button>
+    <div id="userList" style="margin-top:12px;"></div>
+  </div>
 
-<h1>👨‍🏫 Coach - Workout Builder</h1>
+  <!-- EXCEL IMPORT -->
+  <div class="card">
+    <div class="section-title">
+      <h2 style="margin:0;color:white;">📥 Import Workout From Excel</h2>
+    </div>
+    <div class="setup-hint">
+      <strong>Smart Excel Importer:</strong><br><br>
+      • Automatically detects <strong>Upper A</strong>, <strong>Upper B</strong>, <strong>Lower A & B</strong> sections<br>
+      • Automatically detects column headers (columns can be in any order)<br>
+      • Handles any number of exercises per section<br>
+      • Lower A exercises are automatically copied to Lower B<br>
+      • Empty rows are ignored<br><br>
+      <strong>Just upload your Excel file with Sheet 1 (Roadmap) and Sheet 2 (Exercises)</strong>
+    </div>
 
-<p>Create and manage workout plans for your clients</p>
+    <div class="form-group">
+      <label>Username *</label>
+      <input type="text" id="excelUsername" placeholder="e.g., john_doe">
+    </div>
 
+    <div class="form-group">
+      <label>Select Excel File *</label>
+      <input type="file" id="excelFile" accept=".xlsx,.xls">
+    </div>
 
+    <div class="flex-row">
+      <button class="btn btn-primary" onclick="previewExcel()">👁️ Preview Excel Data</button>
+      <button class="btn btn-success" onclick="importExcel()">📥 Convert & Save to Google Sheets</button>
+    </div>
 
-<!-- ===================================================== -->
-<!-- SETUP -->
-<!-- ===================================================== -->
+    <div id="excelMessage" class="message"></div>
+    <div id="importSummary" class="import-summary"></div>
+  </div>
 
+  <!-- ADD / EDIT EXERCISE -->
+  <div class="card">
+    <div class="section-title">
+      <h2 style="margin:0;color:white;">📝 Add/Edit Exercise</h2>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Username *</label>
+        <input type="text" id="username" placeholder="e.g., john_doe">
+      </div>
+      <div class="form-group">
+        <label>Week *</label>
+        <input type="text" id="week" placeholder="e.g., Week 1">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Day *</label>
+        <input type="text" id="day" placeholder="e.g., Day 1">
+      </div>
+      <div class="form-group">
+        <label>Major / Workout Name</label>
+        <input type="text" id="major" placeholder="e.g., Upper A">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Exercise (English) *</label>
+        <input type="text" id="exercise" placeholder="e.g., Incline Barbell Chest Press">
+      </div>
+      <div class="form-group">
+        <label>Exercise (Arabic)</label>
+        <input type="text" id="arabic" placeholder="e.g., بنش مائل بالبار">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Target Muscle</label>
+      <input type="text" id="muscle" placeholder="e.g., الصدر العلوي">
+    </div>
+    <div class="form-row-3">
+      <div class="form-group">
+        <label>Sets</label>
+        <input type="text" id="sets" placeholder="3">
+      </div>
+      <div class="form-group">
+        <label>Reps</label>
+        <input type="text" id="reps" placeholder="6-8">
+      </div>
+      <div class="form-group">
+        <label>Rest</label>
+        <input type="text" id="rest" placeholder="2.5-3 دقائق">
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <button class="btn btn-success" onclick="addWorkout()">➕ Add/Update Exercise</button>
+      <button class="btn btn-danger" onclick="deleteWorkout()">🗑️ Delete Exercise</button>
+      <button class="btn btn-warning" onclick="clearForm()">🔄 Clear Form</button>
+    </div>
+    <div id="addMessage" class="message"></div>
+  </div>
 
-<div class="card">
-
-
-<div class="section-title">
-
-<h2 style="margin:0;color:white;">
-🔧 Setup
-</h2>
-
+  <!-- VIEW WORKOUT -->
+  <div class="card">
+    <div class="section-title">
+      <h2 style="margin:0;color:white;">📋 View Workout Plan</h2>
+    </div>
+    <div class="form-group">
+      <label>Select Username to View</label>
+      <div style="display:flex;gap:10px;">
+        <input type="text" id="viewUsername" placeholder="Enter username" style="flex:1;">
+        <button class="btn btn-primary" onclick="viewWorkout()">👁️ View</button>
+      </div>
+    </div>
+    <div id="viewContent"></div>
+  </div>
 </div>
-
-
-<div class="setup-hint">
-
-<strong>Google Sheet Structure:</strong>
-
-<br>
-
-Sheet name:
-
-<strong>WorkoutData</strong>
-
-<br><br>
-
-Columns:
-
-<code>
-Username | Week | Day | Major | Exercise | Arabic | Muscle | Sets | Reps | Rest
-</code>
-
-</div>
-
-
-
-<div class="form-group">
-
-
-<label>
-Google Apps Script Web App URL
-</label>
-
-
-<input
-type="text"
-id="apiUrl"
-placeholder="https://script.google.com/macros/s/....../exec"
->
-
-
-<small style="color:#6b7280;">
-
-Deploy your Apps Script as a Web App and paste the URL here.
-
-</small>
-
-
-</div>
-
-
-
-<button
-class="btn btn-primary"
-onclick="loadUsers()"
->
-
-📥 Load Users
-
-</button>
-
-
-<div
-id="userList"
-style="margin-top:12px;"
-></div>
-
-
-</div>
-
-
-
-
-
-<!-- ===================================================== -->
-<!-- EXCEL IMPORT -->
-<!-- ===================================================== -->
-
-
-<div class="card">
-
-
-<div class="section-title">
-
-<h2 style="margin:0;color:white;">
-📥 Import Workout From Excel
-</h2>
-
-</div>
-
-
-
-<div class="setup-hint">
-
-<strong>Excel structure:</strong>
-
-<br>
-
-<strong>Sheet 1:</strong>
-Roadmap
-
-<br>
-
-<strong>Sheet 2:</strong>
-Exercise details
-
-<br><br>
-
-The importer automatically detects:
-
-<br>
-
-• Upper A
-
-<br>
-
-• Upper B
-
-<br>
-
-• Lower A & B
-
-<br><br>
-
-<strong>
-Lower A and Lower B will automatically receive the same exercises.
-</strong>
-
-</div>
-
-
-
-<div class="form-group">
-
-
-<label>
-Username *
-</label>
-
-
-<input
-type="text"
-id="excelUsername"
-placeholder="e.g. john_doe"
->
-
-
-</div>
-
-
-
-<div class="form-group">
-
-
-<label>
-Select Excel File *
-</label>
-
-
-<input
-type="file"
-id="excelFile"
-accept=".xlsx,.xls"
->
-
-
-</div>
-
-
-
-<button
-class="btn btn-primary"
-onclick="importExcel()"
->
-
-📥 Convert Excel & Save Workout
-
-</button>
-
-
-
-<div
-id="excelMessage"
-class="message"
-></div>
-
-
-
-<div
-id="importSummary"
-class="import-summary"
-></div>
-
-
-</div>
-
-
-
-
-
-<!-- ===================================================== -->
-<!-- ADD / EDIT EXERCISE -->
-<!-- ===================================================== -->
-
-
-<div class="card">
-
-
-<div class="section-title">
-
-<h2 style="margin:0;color:white;">
-📝 Add/Edit Exercise
-</h2>
-
-</div>
-
-
-
-<div class="form-row">
-
-
-<div class="form-group">
-
-<label>Username *</label>
-
-<input
-type="text"
-id="username"
-placeholder="e.g., john_doe"
->
-
-</div>
-
-
-
-<div class="form-group">
-
-<label>Week *</label>
-
-<input
-type="text"
-id="week"
-placeholder="e.g., الأسبوع A (Upper Focus)"
->
-
-</div>
-
-
-</div>
-
-
-
-
-<div class="form-row">
-
-
-<div class="form-group">
-
-<label>Day *</label>
-
-<input
-type="text"
-id="day"
-placeholder="e.g., Day 1"
->
-
-</div>
-
-
-
-<div class="form-group">
-
-<label>Major / Workout Name</label>
-
-<input
-type="text"
-id="major"
-placeholder="e.g., Upper A"
->
-
-</div>
-
-
-</div>
-
-
-
-
-<div class="form-row">
-
-
-<div class="form-group">
-
-<label>Exercise (English) *</label>
-
-<input
-type="text"
-id="exercise"
-placeholder="e.g., Incline Barbell Chest Press"
->
-
-</div>
-
-
-
-<div class="form-group">
-
-<label>Exercise (Arabic)</label>
-
-<input
-type="text"
-id="arabic"
-placeholder="e.g., بنش مائل بالبار"
->
-
-</div>
-
-
-</div>
-
-
-
-
-<div class="form-group">
-
-<label>Target Muscle</label>
-
-<input
-type="text"
-id="muscle"
-placeholder="e.g., الصدر العلوي"
->
-
-</div>
-
-
-
-
-<div class="form-row-3">
-
-
-<div class="form-group">
-
-<label>Sets</label>
-
-<input
-type="text"
-id="sets"
-placeholder="3"
->
-
-</div>
-
-
-
-<div class="form-group">
-
-<label>Reps</label>
-
-<input
-type="text"
-id="reps"
-placeholder="6-8"
->
-
-</div>
-
-
-
-<div class="form-group">
-
-<label>Rest</label>
-
-<input
-type="text"
-id="rest"
-placeholder="2.5-3 دقائق"
->
-
-</div>
-
-
-</div>
-
-
-
-
-<div style="display:flex;gap:10px;flex-wrap:wrap;">
-
-
-<button
-class="btn btn-success"
-onclick="addWorkout()"
->
-
-➕ Add/Update Exercise
-
-</button>
-
-
-
-<button
-class="btn btn-danger"
-onclick="deleteWorkout()"
->
-
-🗑️ Delete Exercise
-
-</button>
-
-
-
-<button
-class="btn btn-warning"
-onclick="clearForm()"
->
-
-🔄 Clear Form
-
-</button>
-
-
-</div>
-
-
-
-<div
-id="addMessage"
-class="message"
-></div>
-
-
-</div>
-
-
-
-
-
-<!-- ===================================================== -->
-<!-- VIEW WORKOUT -->
-<!-- ===================================================== -->
-
-
-<div class="card">
-
-
-<div class="section-title">
-
-<h2 style="margin:0;color:white;">
-📋 View Workout Plan
-</h2>
-
-</div>
-
-
-
-<div class="form-group">
-
-
-<label>
-Select Username to View
-</label>
-
-
-
-<div style="display:flex;gap:10px;">
-
-
-<input
-type="text"
-id="viewUsername"
-placeholder="Enter username"
-style="flex:1;"
->
-
-
-
-<button
-class="btn btn-primary"
-onclick="viewWorkout()"
->
-
-👁️ View
-
-</button>
-
-
-</div>
-
-
-</div>
-
-
-
-<div id="viewContent"></div>
-
-
-</div>
-
-
-</div>
-
-
-
-
 
 <script>
-
-
 // ============================================================
 // CONFIGURATION
 // ============================================================
-
-
 const STORAGE_KEY = 'coach_api_url';
-
-
-// Load saved API URL
-
-const savedUrl =
-localStorage.getItem(STORAGE_KEY);
-
-
+const savedUrl = localStorage.getItem(STORAGE_KEY);
 if (savedUrl) {
-
-  document.getElementById('apiUrl').value =
-    savedUrl;
-
+  document.getElementById('apiUrl').value = savedUrl;
 }
-
-
-// Save API URL
-
-document
-.getElementById('apiUrl')
-.addEventListener(
-  'change',
-  function() {
-
-    localStorage.setItem(
-      STORAGE_KEY,
-      this.value
-    );
-
-  }
-);
-
-
-
-
+document.getElementById('apiUrl').addEventListener('change', function() {
+  localStorage.setItem(STORAGE_KEY, this.value);
+});
 
 // ============================================================
 // API CALL
 // ============================================================
-
-
 async function callApi(action, data = {}) {
   const baseUrl = document.getElementById('apiUrl').value.trim();
-
   if (!baseUrl) {
-    showMessage(
-      'addMessage',
-      'Please enter your Google Apps Script URL',
-      'error'
-    );
+    showMessage('addMessage', 'Please enter your Google Apps Script URL', 'error');
     return null;
   }
-
   try {
-    // Build GET parameters
     const params = new URLSearchParams();
-
     params.append('action', action);
-
-    // Add all data parameters
     Object.keys(data).forEach(key => {
       if (data[key] !== undefined && data[key] !== null) {
         params.append(key, data[key]);
       }
     });
-
-    // Final URL
     const url = baseUrl + '?' + params.toString();
-
     console.log('API Request:', url);
-
-    // GET request - NO POST
-    // NO Content-Type header
-    // Therefore NO CORS preflight request
-    const response = await fetch(url, {
-      method: 'GET'
-    });
-
+    const response = await fetch(url, { method: 'GET' });
     if (!response.ok) {
-      throw new Error(
-        'HTTP Error ' + response.status + ' - ' + response.statusText
-      );
+      throw new Error('HTTP Error ' + response.status + ' - ' + response.statusText);
     }
-
     const result = await response.json();
-
     console.log('API Response:', result);
-
     return result;
-
   } catch (error) {
     console.error('API Error:', error);
-
-    showMessage(
-      'addMessage',
-      '❌ Error: ' + error.message,
-      'error'
-    );
-
+    showMessage('addMessage', '❌ Error: ' + error.message, 'error');
     return null;
   }
 }
 
-
-
-
-
 // ============================================================
 // LOAD USERS
 // ============================================================
-
-
 async function loadUsers() {
-
-
-  const result =
-    await callApi(
-      'getUsers'
-    );
-
-
-
-  if (
-    result &&
-    result.status === 'success'
-  ) {
-
-
-    const userList =
-      document
-      .getElementById('userList');
-
-
-
-    if (
-      result.users &&
-      result.users.length > 0
-    ) {
-
-
+  const result = await callApi('getUsers');
+  if (result && result.status === 'success') {
+    const userList = document.getElementById('userList');
+    if (result.users && result.users.length > 0) {
       userList.innerHTML = `
-
         <strong>Users:</strong>
-
-        ${result.users.map(
-          u => `
-
-            <span
-              style="
-              display:inline-block;
-              background:#dbeafe;
-              padding:4px 12px;
-              border-radius:12px;
-              margin:4px;
-              "
-            >
-
-              ${escapeHtml(u)}
-
-            </span>
-
-          `
-        ).join(' ')}
-
+        ${result.users.map(u => `
+          <span style="display:inline-block;background:#dbeafe;padding:4px 12px;border-radius:12px;margin:4px;">
+            ${escapeHtml(u)}
+          </span>
+        `).join(' ')}
       `;
-
-
     } else {
-
-
-      userList.innerHTML =
-
-        '<p style="color:#6b7280;">' +
-
-        'No users found. Add your first workout!' +
-
-        '</p>';
-
+      userList.innerHTML = '<p style="color:#6b7280;">No users found. Add your first workout!</p>';
     }
-
-
   }
-
 }
-
-
-
-
 
 // ============================================================
 // ADD / UPDATE WORKOUT
 // ============================================================
-
-
 async function addWorkout() {
-
-
   const data = {
-
-
-    username:
-      document
-      .getElementById('username')
-      .value
-      .trim(),
-
-
-    week:
-      document
-      .getElementById('week')
-      .value
-      .trim(),
-
-
-    day:
-      document
-      .getElementById('day')
-      .value
-      .trim(),
-
-
-    major:
-      document
-      .getElementById('major')
-      .value
-      .trim(),
-
-
-    exercise:
-      document
-      .getElementById('exercise')
-      .value
-      .trim(),
-
-
-    arabic:
-      document
-      .getElementById('arabic')
-      .value
-      .trim(),
-
-
-    muscle:
-      document
-      .getElementById('muscle')
-      .value
-      .trim(),
-
-
-    sets:
-      document
-      .getElementById('sets')
-      .value
-      .trim(),
-
-
-    reps:
-      document
-      .getElementById('reps')
-      .value
-      .trim(),
-
-
-    rest:
-      document
-      .getElementById('rest')
-      .value
-      .trim()
-
+    username: document.getElementById('username').value.trim(),
+    week: document.getElementById('week').value.trim(),
+    day: document.getElementById('day').value.trim(),
+    major: document.getElementById('major').value.trim(),
+    exercise: document.getElementById('exercise').value.trim(),
+    arabic: document.getElementById('arabic').value.trim(),
+    muscle: document.getElementById('muscle').value.trim(),
+    sets: document.getElementById('sets').value.trim(),
+    reps: document.getElementById('reps').value.trim(),
+    rest: document.getElementById('rest').value.trim()
   };
-
-
-
-  if (
-    !data.username ||
-    !data.week ||
-    !data.day ||
-    !data.exercise
-  ) {
-
-
-    showMessage(
-
-      'addMessage',
-
-      'Please fill in Username, Week, Day, and Exercise',
-
-      'error'
-
-    );
-
-
+  if (!data.username || !data.week || !data.day || !data.exercise) {
+    showMessage('addMessage', 'Please fill in Username, Week, Day, and Exercise', 'error');
     return;
-
   }
-
-
-
-  const result =
-    await callApi(
-      'addWorkout',
-      data
-    );
-
-
-
-  if (
-    result &&
-    result.status === 'success'
-  ) {
-
-
-    showMessage(
-
-      'addMessage',
-
-      '✅ ' +
-      result.message,
-
-      'success'
-
-    );
-
-
+  const result = await callApi('addWorkout', data);
+  if (result && result.status === 'success') {
+    showMessage('addMessage', '✅ ' + result.message, 'success');
     loadUsers();
-
-
   }
-
 }
-
-
-
-
 
 // ============================================================
 // DELETE WORKOUT
 // ============================================================
-
-
 async function deleteWorkout() {
-
-
   const data = {
-
-
-    username:
-      document
-      .getElementById('username')
-      .value
-      .trim(),
-
-
-    week:
-      document
-      .getElementById('week')
-      .value
-      .trim(),
-
-
-    day:
-      document
-      .getElementById('day')
-      .value
-      .trim(),
-
-
-    exercise:
-      document
-      .getElementById('exercise')
-      .value
-      .trim()
-
+    username: document.getElementById('username').value.trim(),
+    week: document.getElementById('week').value.trim(),
+    day: document.getElementById('day').value.trim(),
+    exercise: document.getElementById('exercise').value.trim()
   };
-
-
-
-  if (
-    !data.username ||
-    !data.week ||
-    !data.day ||
-    !data.exercise
-  ) {
-
-
-    showMessage(
-
-      'addMessage',
-
-      'Please fill in Username, Week, Day, and Exercise to delete',
-
-      'error'
-
-    );
-
-
+  if (!data.username || !data.week || !data.day || !data.exercise) {
+    showMessage('addMessage', 'Please fill in Username, Week, Day, and Exercise to delete', 'error');
     return;
-
   }
-
-
-
-  if (
-    !confirm(
-      `Delete "${data.exercise}" for ${data.username}?`
-    )
-  ) {
-
-    return;
-
-  }
-
-
-
-  const result =
-    await callApi(
-      'deleteWorkout',
-      data
-    );
-
-
-
-  if (
-    result &&
-    result.status === 'success'
-  ) {
-
-
-    showMessage(
-
-      'addMessage',
-
-      '✅ ' +
-      result.message,
-
-      'success'
-
-    );
-
-
+  if (!confirm(`Delete "${data.exercise}" for ${data.username}?`)) return;
+  const result = await callApi('deleteWorkout', data);
+  if (result && result.status === 'success') {
+    showMessage('addMessage', '✅ ' + result.message, 'success');
     loadUsers();
-
-
   }
-
 }
-
-
-
-
 
 // ============================================================
 // VIEW WORKOUT
 // ============================================================
-
-
 async function viewWorkout() {
-
-
-  const username =
-    document
-    .getElementById('viewUsername')
-    .value
-    .trim();
-
-
-
+  const username = document.getElementById('viewUsername').value.trim();
   if (!username) {
-
-
-    showMessage(
-
-      'addMessage',
-
-      'Please enter a username',
-
-      'error'
-
-    );
-
-
+    showMessage('addMessage', 'Please enter a username', 'error');
     return;
-
   }
-
-
-
-  const result =
-    await callApi(
-
-      'getWorkoutData',
-
-      {
-        username
-      }
-
-    );
-
-
-
-  if (
-    result &&
-    result.status === 'success'
-  ) {
-
-
-    const container =
-      document
-      .getElementById('viewContent');
-
-
-
-    if (
-      !result.sections ||
-      result.sections.length === 0
-    ) {
-
-
-      container.innerHTML =
-
-        '<p style="color:#6b7280;">' +
-
-        'No workout data found for this user' +
-
-        '</p>';
-
-
+  const result = await callApi('getWorkoutData', { username });
+  if (result && result.status === 'success') {
+    const container = document.getElementById('viewContent');
+    if (!result.sections || result.sections.length === 0) {
+      container.innerHTML = '<p style="color:#6b7280;">No workout data found for this user</p>';
       return;
-
     }
-
-
-
-    let html =
-
-      '<div class="table-container">' +
-
-      '<table>';
-
-
-
-    html += `
-
-      <tr>
-
-        <th>Week</th>
-
-        <th>Day</th>
-
-        <th>Major</th>
-
-        <th>Exercise</th>
-
-        <th>Arabic</th>
-
-        <th>Muscle</th>
-
-        <th>Sets</th>
-
-        <th>Reps</th>
-
-        <th>Rest</th>
-
-      </tr>
-
-    `;
-
-
-
-    result.sections.forEach(
-      section => {
-
-
-        section.exercises.forEach(
-          ex => {
-
-
-            html += `
-
-              <tr>
-
-                <td>
-                  ${escapeHtml(ex.week || '')}
-                </td>
-
-                <td>
-                  ${escapeHtml(section.title || '')}
-                </td>
-
-                <td>
-                  ${escapeHtml(ex.major || '')}
-                </td>
-
-                <td>
-                  ${escapeHtml(ex.eng || '')}
-                </td>
-
-                <td>
-                  ${escapeHtml(ex.arb || '')}
-                </td>
-
-                <td>
-                  ${escapeHtml(ex.muscle || '')}
-                </td>
-
-                <td>
-                  ${escapeHtml(ex.sets || '')}
-                </td>
-
-                <td>
-                  ${escapeHtml(ex.reps || '')}
-                </td>
-
-                <td>
-                  ${escapeHtml(ex.rest || '')}
-                </td>
-
-              </tr>
-
-            `;
-
-          }
-        );
-
-      }
-    );
-
-
-
-    html +=
-
-      '</table>' +
-
-      '</div>';
-
-
-
-    container.innerHTML =
-      html;
-
-
-
-    showMessage(
-
-      'addMessage',
-
-      `✅ Loaded workout plan for ${username}`,
-
-      'success'
-
-    );
-
-
+    let html = '<div class="table-container"><table>';
+    html += `<tr><th>Week</th><th>Day</th><th>Major</th><th>Exercise</th><th>Arabic</th><th>Muscle</th><th>Sets</th><th>Reps</th><th>Rest</th></tr>`;
+    result.sections.forEach(section => {
+      section.exercises.forEach(ex => {
+        html += `<tr>
+          <td>${escapeHtml(ex.week || '')}</td>
+          <td>${escapeHtml(section.title || '')}</td>
+          <td>${escapeHtml(ex.major || '')}</td>
+          <td>${escapeHtml(ex.eng || '')}</td>
+          <td>${escapeHtml(ex.arb || '')}</td>
+          <td>${escapeHtml(ex.muscle || '')}</td>
+          <td>${escapeHtml(ex.sets || '')}</td>
+          <td>${escapeHtml(ex.reps || '')}</td>
+          <td>${escapeHtml(ex.rest || '')}</td>
+        </tr>`;
+      });
+    });
+    html += '</table></div>';
+    container.innerHTML = html;
+    showMessage('addMessage', `✅ Loaded workout plan for ${username}`, 'success');
   }
-
 }
-
-
-
-
 
 // ============================================================
 // CLEAR FORM
 // ============================================================
-
-
 function clearForm() {
-
-
-  document.getElementById('username').value = '';
-
-  document.getElementById('week').value = '';
-
-  document.getElementById('day').value = '';
-
-  document.getElementById('major').value = '';
-
-  document.getElementById('exercise').value = '';
-
-  document.getElementById('arabic').value = '';
-
-  document.getElementById('muscle').value = '';
-
-  document.getElementById('sets').value = '';
-
-  document.getElementById('reps').value = '';
-
-  document.getElementById('rest').value = '';
-
+  ['username', 'week', 'day', 'major', 'exercise', 'arabic', 'muscle', 'sets', 'reps', 'rest']
+    .forEach(id => document.getElementById(id).value = '');
 }
 
-
-
-
-
 // ============================================================
-// EXCEL IMPORT
+// SMART EXCEL IMPORTER - PREVIEW
 // ============================================================
+let parsedExcelData = null;
 
-
-async function importExcel() {
-
-
-  const username =
-
-    document
-    .getElementById('excelUsername')
-    .value
-    .trim();
-
-
-
-  const fileInput =
-
-    document
-    .getElementById('excelFile');
-
-
-
-  const file =
-    fileInput.files[0];
-
-
-
-  if (!username) {
-
-
-    showExcelMessage(
-
-      '❌ Please enter Username',
-
-      'error'
-
-    );
-
-
-    return;
-
-  }
-
-
-
+function previewExcel() {
+  const fileInput = document.getElementById('excelFile');
+  const file = fileInput.files[0];
   if (!file) {
-
-
-    showExcelMessage(
-
-      '❌ Please select an Excel file',
-
-      'error'
-
-    );
-
-
+    showExcelMessage('Please select an Excel file', 'error');
     return;
-
   }
-
-
-
-  try {
-
-
-    showExcelMessage(
-
-      '⏳ Reading Excel file...',
-
-      'success'
-
-    );
-
-
-
-    // ========================================================
-    // READ EXCEL
-    // ========================================================
-
-
-    const buffer =
-      await file.arrayBuffer();
-
-
-
-    const workbook =
-      XLSX.read(
-
-        buffer,
-
-        {
-          type: 'array'
-        }
-
-      );
-
-
-
-    if (
-      workbook.SheetNames.length < 2
-    ) {
-
-
-      showExcelMessage(
-
-        '❌ Excel file must contain at least 2 sheets',
-
-        'error'
-
-      );
-
-
-      return;
-
-    }
-
-
-
-    // ========================================================
-    // SHEET 1 = ROADMAP
-    // ========================================================
-
-
-    const roadmapSheet =
-
-      workbook.Sheets[
-        workbook.SheetNames[0]
-      ];
-
-
-
-    const roadmap =
-
-      XLSX.utils.sheet_to_json(
-
-        roadmapSheet,
-
-        {
-
-          header: 1,
-
-          defval: ''
-
-        }
-
-      );
-
-
-
-    // ========================================================
-    // SHEET 2 = EXERCISES
-    // ========================================================
-
-
-    const exerciseSheet =
-
-      workbook.Sheets[
-        workbook.SheetNames[1]
-      ];
-
-
-
-    const exerciseRows =
-
-      XLSX.utils.sheet_to_json(
-
-        exerciseSheet,
-
-        {
-
-          header: 1,
-
-          defval: ''
-
-        }
-
-      );
-
-
-
-    // ========================================================
-    // PARSE EXERCISES
-    // ========================================================
-
-
-    const majors =
-
-      parseExerciseSheet(
-        exerciseRows
-      );
-
-
-
-    // ========================================================
-    // PARSE ROADMAP
-    // ========================================================
-
-
-    const workoutRows =
-
-      parseRoadmapSheet(
-
-        roadmap,
-
-        majors,
-
-        username
-
-      );
-
-
-
-    if (
-      workoutRows.length === 0
-    ) {
-
-
-      showExcelMessage(
-
-        '❌ No workout exercises found. Please check your Excel structure.',
-
-        'error'
-
-      );
-
-
-      return;
-
-    }
-
-
-
-    // ========================================================
-    // SHOW SUMMARY
-    // ========================================================
-
-
-    const majorCounts = {};
-
-
-
-    workoutRows.forEach(
-      row => {
-
-        majorCounts[row.major] =
-
-          (majorCounts[row.major] || 0) + 1;
-
+  
+  showExcelMessage('⏳ Reading Excel file...', 'info');
+  
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = new Uint8Array(e.target.result);
+      const result = parseExcelSmart(data);
+      if (result) {
+        parsedExcelData = result;
+        displayPreview(result);
+        showExcelMessage('✅ Preview generated successfully! Click "Convert & Save" to import.', 'success');
       }
-    );
-
-
-
-    let summary =
-
-      '<strong>Excel converted successfully.</strong><br><br>' +
-
-      'Username: ' +
-      escapeHtml(username) +
-
-      '<br>' +
-
-      'Total workout rows: ' +
-      workoutRows.length +
-
-      '<br><br>';
-
-
-
-    Object.keys(majorCounts).forEach(
-      major => {
-
-        summary +=
-
-          escapeHtml(major) +
-
-          ': ' +
-
-          majorCounts[major] +
-
-          ' exercises<br>';
-
-      }
-    );
-
-
-
-    document
-    .getElementById('importSummary')
-    .innerHTML = summary;
-
-
-
-    document
-    .getElementById('importSummary')
-    .style.display = 'block';
-
-
-
-    // ========================================================
-    // SEND TO GOOGLE SHEETS
-    // ========================================================
-
-
-    showExcelMessage(
-
-      '⏳ Saving workout to Google Sheet...',
-
-      'success'
-
-    );
-
-
-
-    let successCount = 0;
-
-    let errorCount = 0;
-
-
-
-    for (
-      const workout of workoutRows
-    ) {
-
-
-      const result =
-
-        await callApi(
-
-          'addWorkout',
-
-          workout
-
-        );
-
-
-
-      if (
-
-        result &&
-
-        result.status === 'success'
-
-      ) {
-
-
-        successCount++;
-
-
-      } else {
-
-
-        errorCount++;
-
-
-      }
-
+    } catch (error) {
+      showExcelMessage('❌ Error: ' + error.message, 'error');
+      console.error(error);
     }
-
-
-
-    // ========================================================
-    // FINAL RESULT
-    // ========================================================
-
-
-    if (
-      errorCount === 0
-    ) {
-
-
-      showExcelMessage(
-
-        `✅ Import completed successfully! ` +
-
-        `${successCount} workout rows saved.`,
-
-        'success'
-
-      );
-
-
-    } else {
-
-
-      showExcelMessage(
-
-        `⚠️ Import finished. ` +
-
-        `${successCount} succeeded, ` +
-
-        `${errorCount} failed.`,
-
-        'error'
-
-      );
-
-    }
-
-
-
-    // Refresh users
-
-    loadUsers();
-
-
-  } catch (error) {
-
-
-    console.error(
-      'Excel Import Error:',
-      error
-    );
-
-
-
-    showExcelMessage(
-
-      '❌ Excel Import Error: ' +
-
-      error.message,
-
-      'error'
-
-    );
-
-  }
-
+  };
+  reader.readAsArrayBuffer(file);
 }
 
+// ============================================================
+// SMART EXCEL PARSER
+// ============================================================
+function parseExcelSmart(data) {
+  const workbook = XLSX.read(data, { type: 'array' });
+  
+  if (workbook.SheetNames.length < 2) {
+    showExcelMessage('Excel must have at least 2 sheets', 'error');
+    return null;
+  }
 
+  // ===== SHEET 1: ROADMAP =====
+  const roadmapSheet = workbook.Sheets[workbook.SheetNames[0]];
+  const roadmap = XLSX.utils.sheet_to_json(roadmapSheet, { header: 1, defval: '', blankrows: false });
 
+  // ===== SHEET 2: EXERCISES =====
+  const exerciseSheet = workbook.Sheets[workbook.SheetNames[1]];
+  const exerciseRows = XLSX.utils.sheet_to_json(exerciseSheet, { header: 1, defval: '', blankrows: false });
 
+  // ===== DETECT MAJOR SECTIONS FROM EXERCISE SHEET =====
+  const majorSections = detectMajorSections(exerciseRows);
+  console.log('Major Sections Detected:', Object.keys(majorSections));
+
+  // ===== DETECT COLUMN MAPPING =====
+  const columnMap = detectColumnMapping(exerciseRows);
+  console.log('Column Mapping:', columnMap);
+
+  // ===== PARSE ROADMAP =====
+  const roadmapData = parseRoadmapSmart(roadmap, majorSections);
+  console.log('Roadmap Data:', roadmapData);
+
+  return {
+    roadmap: roadmapData,
+    majorSections: majorSections,
+    columnMap: columnMap,
+    totalExercises: Object.values(majorSections).reduce((sum, ex) => sum + ex.length, 0)
+  };
+}
 
 // ============================================================
-// PARSE SHEET 2 - EXERCISES
+// DETECT MAJOR SECTIONS
 // ============================================================
+function detectMajorSections(rows) {
+  const sections = {};
+  let currentMajor = null;
+  let headerRowFound = false;
+  let exerciseStartIndex = -1;
 
+  const majorKeywords = [
+    { keyword: 'Upper A', aliases: ['الجزء العلوي (Upper A)', 'علوي (Upper A)'] },
+    { keyword: 'Upper B', aliases: ['الجزء العلوي (Upper B)', 'علوي (Upper B)'] },
+    { keyword: 'Lower A', aliases: ['الجزء السفلي (Lower A & B)', 'سفلي (Lower A)', 'Lower A & B'] },
+    { keyword: 'Lower B', aliases: ['سفلي (Lower B)'] }
+  ];
 
-function parseExerciseSheet(rows) {
+  for (let i = 0; i < rows.length; i++) {
+    const row = rows[i];
+    const rowText = row.map(cell => String(cell || '').trim()).join(' ');
 
+    // Skip empty rows
+    if (!rowText.trim()) continue;
 
-  const majors = {
+    // Check if this is a major section header
+    let detectedMajor = null;
+    for (const major of majorKeywords) {
+      if (major.aliases.some(alias => rowText.includes(alias))) {
+        detectedMajor = major.keyword;
+        break;
+      }
+    }
 
+    if (detectedMajor) {
+      // If we were collecting exercises, save them
+      if (currentMajor && exerciseStartIndex !== -1) {
+        const exercises = collectExercises(rows, exerciseStartIndex, i, columnMap);
+        if (exercises.length > 0) {
+          sections[currentMajor] = exercises;
+        }
+      }
 
-    'Upper A': [],
+      currentMajor = detectedMajor;
+      headerRowFound = false;
+      exerciseStartIndex = -1;
+      continue;
+    }
 
-    'Upper B': [],
+    // Check for exercise header row (contains "اسم التمرين" or "Exercise")
+    if (currentMajor && row.some(cell => 
+      String(cell || '').includes('اسم التمرين') || 
+      String(cell || '').includes('Exercise') ||
+      String(cell || '').includes('اسم التمرين (ENG)')
+    )) {
+      headerRowFound = true;
+      exerciseStartIndex = i + 1;
+      continue;
+    }
 
-    'Lower A': [],
+    // If we're past the header and have exercises, collect them
+    if (currentMajor && headerRowFound && i >= exerciseStartIndex) {
+      // Continue collecting - we'll save when we hit next section
+    }
+  }
 
-    'Lower B': []
+  // Save the last section
+  if (currentMajor && exerciseStartIndex !== -1) {
+    const exercises = collectExercises(rows, exerciseStartIndex, rows.length, columnMap);
+    if (exercises.length > 0) {
+      sections[currentMajor] = exercises;
+    }
+  }
 
+  // Special handling: Lower A & B share exercises
+  if (sections['Lower A'] && sections['Lower A'].length > 0) {
+    sections['Lower B'] = sections['Lower A'].map(ex => ({ ...ex }));
+  }
+
+  return sections;
+}
+
+// ============================================================
+// DETECT COLUMN MAPPING
+// ============================================================
+function detectColumnMapping(rows) {
+  const mapping = {
+    exercise: -1,
+    arabic: -1,
+    muscle: -1,
+    sets: -1,
+    reps: -1,
+    rest: -1
   };
 
-
-
-  let currentMajor = null;
-
-
-
-  for (
-    let i = 0;
-
-    i < rows.length;
-
-    i++
-  ) {
-
-
+  for (let i = 0; i < rows.length; i++) {
     const row = rows[i];
+    const rowText = row.map(cell => String(cell || '').trim());
 
-
-
-    // Create combined text
-    // This allows the title to be
-    // anywhere in the row.
-
-
-    const rowText =
-
-      row
-
-      .map(
-        cell =>
-          String(cell || '').trim()
-      )
-
-      .join(' ');
-
-
-
-    // ========================================================
-    // DETECT UPPER A
-    // ========================================================
-
-
-    if (
-      rowText.includes('Upper A')
-    ) {
-
-
-      currentMajor = 'Upper A';
-
-
-      continue;
-
+    // Look for header row
+    if (rowText.some(cell => cell.includes('اسم التمرين') || cell.includes('Exercise'))) {
+      for (let j = 0; j < rowText.length; j++) {
+        const cell = rowText[j];
+        if (cell.includes('اسم التمرين (ENG)') || cell.includes('Exercise') || cell.includes('ENG')) {
+          mapping.exercise = j;
+        } else if (cell.includes('اسم التمرين (ARB)') || cell.includes('Arabic') || cell.includes('ARB')) {
+          mapping.arabic = j;
+        } else if (cell.includes('العضلة المستهدفة') || cell.includes('Muscle')) {
+          mapping.muscle = j;
+        } else if (cell.includes('المجموعات') || cell.includes('Sets')) {
+          mapping.sets = j;
+        } else if (cell.includes('التكرارات') || cell.includes('Reps')) {
+          mapping.reps = j;
+        } else if (cell.includes('الراحة') || cell.includes('Rest')) {
+          mapping.rest = j;
+        }
+      }
+      break;
     }
-
-
-
-    // ========================================================
-    // DETECT UPPER B
-    // ========================================================
-
-
-    if (
-      rowText.includes('Upper B')
-    ) {
-
-
-      currentMajor = 'Upper B';
-
-
-      continue;
-
-    }
-
-
-
-    // ========================================================
-    // DETECT LOWER A & B
-    // ========================================================
-
-
-    if (
-
-      rowText.includes('Lower A & B') ||
-
-      rowText.includes('Lower A&B') ||
-
-      rowText.includes('Lower A and B')
-
-    ) {
-
-
-      currentMajor = 'Lower A';
-
-
-      continue;
-
-    }
-
-
-
-    // ========================================================
-    // DETECT LOWER A
-    // ========================================================
-
-
-    if (
-      rowText.includes('Lower A')
-    ) {
-
-
-      currentMajor = 'Lower A';
-
-
-      continue;
-
-    }
-
-
-
-    // ========================================================
-    // DETECT LOWER B
-    // ========================================================
-
-
-    if (
-      rowText.includes('Lower B')
-    ) {
-
-
-      currentMajor = 'Lower B';
-
-
-      continue;
-
-    }
-
-
-
-    // ========================================================
-    // IGNORE EXERCISE HEADER
-    // ========================================================
-
-
-    if (
-
-      row.some(
-
-        cell =>
-
-          String(cell || '')
-          .trim() ===
-          'اسم التمرين (ENG)'
-
-      )
-
-    ) {
-
-
-      continue;
-
-    }
-
-
-
-    // ========================================================
-    // READ EXERCISE
-    // ========================================================
-
-
-    if (
-
-      currentMajor &&
-
-      row[0] &&
-
-      String(row[0]).trim() !== ''
-
-    ) {
-
-
-      const exercise = {
-
-
-        exercise:
-
-          String(
-            row[0] || ''
-          ).trim(),
-
-
-        arabic:
-
-          String(
-            row[1] || ''
-          ).trim(),
-
-
-        muscle:
-
-          String(
-            row[2] || ''
-          ).trim(),
-
-
-        sets:
-
-          String(
-            row[3] || ''
-          ).trim(),
-
-
-        reps:
-
-          String(
-            row[4] || ''
-          ).trim(),
-
-
-        rest:
-
-          String(
-            row[5] || ''
-          ).trim()
-
-      };
-
-
-
-      majors[currentMajor]
-      .push(exercise);
-
-
-    }
-
   }
 
-
-
-  // ========================================================
-  // IMPORTANT:
-  //
-  // Lower A = Lower B
-  //
-  // The Excel title is:
-  // Lower A & B
-  //
-  // Therefore both use the exact same exercises.
-  // ========================================================
-
-
-  if (
-    majors['Lower A'].length > 0
-  ) {
-
-
-    majors['Lower B'] =
-
-      majors['Lower A'].map(
-
-        exercise => ({
-          ...exercise
-        })
-
-      );
-
-  }
-
-
-
-  return majors;
-
+  return mapping;
 }
 
-
-
-
-
 // ============================================================
-// PARSE SHEET 1 - ROADMAP
+// COLLECT EXERCISES
 // ============================================================
+function collectExercises(rows, startIdx, endIdx, columnMap) {
+  const exercises = [];
+  const { exercise, arabic, muscle, sets, reps, rest } = columnMap;
 
-
-function parseRoadmapSheet(
-
-  rows,
-
-  majors,
-
-  username
-
-) {
-
-
-  const output = [];
-
-
-
-  // ==========================================================
-  // FIND REAL HEADER
-  //
-  // The first title line is ignored.
-  //
-  // We search for:
-  // الأسبوع | اليوم 1 | اليوم 2 ...
-  // ==========================================================
-
-
-  let headerIndex = -1;
-
-
-
-  for (
-    let i = 0;
-
-    i < rows.length;
-
-    i++
-  ) {
-
-
+  for (let i = startIdx; i < endIdx; i++) {
     const row = rows[i];
+    const rowText = row.map(cell => String(cell || '').trim()).join(' ');
+    
+    // Skip empty rows
+    if (!rowText.trim()) continue;
 
-
-
-    if (
-
-      row.some(
-
-        cell =>
-
-          String(cell || '')
-          .trim() ===
-          'الأسبوع'
-
-      )
-
-    ) {
-
-
-      headerIndex = i;
-
-
+    // Skip if this row contains a section header (stop collecting)
+    if (row.some(cell => 
+      String(cell || '').includes('الجزء العلوي') || 
+      String(cell || '').includes('الجزء السفلي') ||
+      String(cell || '').includes('Upper') ||
+      String(cell || '').includes('Lower')
+    )) {
       break;
-
     }
 
+    // Get exercise name
+    const exerciseName = exercise !== -1 ? String(row[exercise] || '').trim() : '';
+    if (!exerciseName) continue;
+
+    exercises.push({
+      exercise: exerciseName,
+      arabic: arabic !== -1 ? String(row[arabic] || '').trim() : '',
+      muscle: muscle !== -1 ? String(row[muscle] || '').trim() : '',
+      sets: sets !== -1 ? String(row[sets] || '').trim() : '',
+      reps: reps !== -1 ? String(row[reps] || '').trim() : '',
+      rest: rest !== -1 ? String(row[rest] || '').trim() : ''
+    });
   }
 
+  return exercises;
+}
 
-
-  if (
-    headerIndex === -1
-  ) {
-
-
-    console.error(
-      'Roadmap header not found'
-    );
-
-
-    return [];
-
-  }
-
-
-
-  // ==========================================================
-  // READ WEEK ROWS
-  // ==========================================================
-
-
-  for (
-
-    let i = headerIndex + 1;
-
-    i < rows.length;
-
-    i++
-
-  ) {
-
-
+// ============================================================
+// PARSE ROADMAP
+// ============================================================
+function parseRoadmapSmart(rows, majorSections) {
+  const output = [];
+  
+  // Find header row
+  let headerIndex = -1;
+  for (let i = 0; i < rows.length; i++) {
     const row = rows[i];
-
-
-
-    // First column = Week
-
-    const week =
-
-      String(
-        row[0] || ''
-      ).trim();
-
-
-
-    if (!week) {
-
-      continue;
-
+    if (row.some(cell => String(cell || '').trim() === 'الأسبوع')) {
+      headerIndex = i;
+      break;
     }
-
-
-
-    // ========================================================
-    // DAYS 1 - 7
-    // ========================================================
-
-
-    for (
-
-      let dayIndex = 1;
-
-      dayIndex <= 7;
-
-      dayIndex++
-
-    ) {
-
-
-      const dayName =
-
-        String(
-
-          row[dayIndex] || ''
-
-        ).trim();
-
-
-
-      if (!dayName) {
-
-        continue;
-
-      }
-
-
-
-      // ======================================================
-      // REST DAY
-      // ======================================================
-
-
-      if (
-
-        dayName.includes('راحة') ||
-
-        dayName.toLowerCase()
-        .includes('rest')
-
-      ) {
-
-
-        continue;
-
-      }
-
-
-
-      // ======================================================
-      // FIND MAJOR
-      // ======================================================
-
-
-      const major =
-
-        detectMajor(dayName);
-
-
-
-      if (
-
-        !major ||
-
-        !majors[major] ||
-
-        majors[major].length === 0
-
-      ) {
-
-
-        console.warn(
-
-          'No exercises found for major:',
-
-          major
-
-        );
-
-
-        continue;
-
-      }
-
-
-
-      // ======================================================
-      // ADD EVERY EXERCISE
-      // FOR THIS MAJOR
-      // ======================================================
-
-
-      majors[major].forEach(
-
-        exercise => {
-
-
-          output.push({
-
-
-            username:
-
-              username,
-
-
-            week:
-
-              week,
-
-
-            // Store the original
-            // roadmap day name
-            // so it remains meaningful.
-
-
-            day:
-
-              dayName,
-
-
-            major:
-
-              major,
-
-
-            exercise:
-
-              exercise.exercise,
-
-
-            arabic:
-
-              exercise.arabic,
-
-
-            muscle:
-
-              exercise.muscle,
-
-
-            sets:
-
-              exercise.sets,
-
-
-            reps:
-
-              exercise.reps,
-
-
-            rest:
-
-              exercise.rest
-
-
-          });
-
-
-        }
-
-      );
-
-
-    }
-
-
   }
 
+  if (headerIndex === -1) {
+    console.error('Roadmap header not found');
+    return output;
+  }
 
+  // Parse each week row
+  for (let i = headerIndex + 1; i < rows.length; i++) {
+    const row = rows[i];
+    const week = String(row[0] || '').trim();
+    if (!week) continue;
+
+    // Check days 1-7
+    for (let dayIndex = 1; dayIndex <= 7; dayIndex++) {
+      const dayName = String(row[dayIndex] || '').trim();
+      if (!dayName) continue;
+
+      // Skip rest days
+      if (dayName.includes('راحة') || dayName.toLowerCase().includes('rest')) {
+        continue;
+      }
+
+      // Detect Major from day name
+      const major = detectMajorFromText(dayName);
+      if (!major || !majorSections[major] || majorSections[major].length === 0) {
+        console.warn('No exercises found for major:', major, 'day:', dayName);
+        continue;
+      }
+
+      // Add all exercises for this major to this day
+      majorSections[major].forEach(exercise => {
+        output.push({
+          week: week,
+          day: dayName,
+          major: major,
+          exercise: exercise.exercise,
+          arabic: exercise.arabic,
+          muscle: exercise.muscle,
+          sets: exercise.sets,
+          reps: exercise.reps,
+          rest: exercise.rest
+        });
+      });
+    }
+  }
 
   return output;
-
 }
 
-
-
-
-
 // ============================================================
-// DETECT MAJOR
+// DETECT MAJOR FROM TEXT
 // ============================================================
-
-
-function detectMajor(text) {
-
-
-  const value =
-
-    String(text || '')
-    .toLowerCase()
-    .trim();
-
-
-
-  // Upper A
-
-  if (
-
-    value.includes('upper a')
-
-  ) {
-
-
+function detectMajorFromText(text) {
+  const value = String(text || '').toLowerCase().trim();
+  
+  if (value.includes('upper a') || value.includes('علوي (upper a)')) {
     return 'Upper A';
-
   }
-
-
-
-  // Upper B
-
-  if (
-
-    value.includes('upper b')
-
-  ) {
-
-
+  if (value.includes('upper b') || value.includes('علوي (upper b)')) {
     return 'Upper B';
-
   }
-
-
-
-  // Lower A
-
-  if (
-
-    value.includes('lower a')
-
-  ) {
-
-
+  if (value.includes('lower a') || value.includes('سفلي (lower a)')) {
     return 'Lower A';
-
   }
-
-
-
-  // Lower B
-
-  if (
-
-    value.includes('lower b')
-
-  ) {
-
-
+  if (value.includes('lower b') || value.includes('سفلي (lower b)')) {
     return 'Lower B';
+  }
+  
+  return null;
+}
 
+// ============================================================
+// DISPLAY PREVIEW
+// ============================================================
+function displayPreview(result) {
+  const summary = document.getElementById('importSummary');
+  
+  let html = '<strong>📊 Excel Preview</strong><br><br>';
+  
+  // Show sections
+  html += '<strong>📋 Major Sections Found:</strong><br>';
+  Object.keys(result.majorSections).forEach(major => {
+    const exercises = result.majorSections[major];
+    html += `<span class="tag">${major}</span> (${exercises.length} exercises)<br>`;
+  });
+  
+  html += '<br><strong>📅 Roadmap Days:</strong><br>';
+  const days = {};
+  result.roadmap.forEach(item => {
+    const key = item.week + ' - ' + item.day;
+    if (!days[key]) days[key] = [];
+    days[key].push(item.major);
+  });
+  Object.keys(days).forEach(day => {
+    const majors = [...new Set(days[day])];
+    html += `• ${day}: ${majors.join(', ')}<br>`;
+  });
+  
+  html += `<br><strong>Total exercises to import:</strong> ${result.roadmap.length}`;
+  
+  summary.innerHTML = html;
+  summary.classList.add('visible');
+}
+
+// ============================================================
+// IMPORT EXCEL TO GOOGLE SHEETS
+// ============================================================
+async function importExcel() {
+  const username = document.getElementById('excelUsername').value.trim();
+  if (!username) {
+    showExcelMessage('Please enter a username', 'error');
+    return;
   }
 
+  const fileInput = document.getElementById('excelFile');
+  const file = fileInput.files[0];
+  if (!file) {
+    showExcelMessage('Please select an Excel file', 'error');
+    return;
+  }
 
+  // If we don't have parsed data, parse it now
+  if (!parsedExcelData) {
+    showExcelMessage('⏳ Parsing Excel file...', 'info');
+    const reader = new FileReader();
+    reader.onload = async function(e) {
+      const data = new Uint8Array(e.target.result);
+      const result = parseExcelSmart(data);
+      if (result) {
+        parsedExcelData = result;
+        await uploadToGoogleSheets(username);
+      }
+    };
+    reader.readAsArrayBuffer(file);
+    return;
+  }
 
-  return null;
-
+  await uploadToGoogleSheets(username);
 }
 
+async function uploadToGoogleSheets(username) {
+  if (!parsedExcelData || !parsedExcelData.roadmap || parsedExcelData.roadmap.length === 0) {
+    showExcelMessage('No data to upload. Please preview first.', 'error');
+    return;
+  }
 
+  showExcelMessage('⏳ Uploading to Google Sheets...', 'info');
+  
+  let successCount = 0;
+  let errorCount = 0;
 
+  for (const workout of parsedExcelData.roadmap) {
+    const data = {
+      username: username,
+      week: workout.week,
+      day: workout.day,
+      major: workout.major,
+      exercise: workout.exercise,
+      arabic: workout.arabic,
+      muscle: workout.muscle,
+      sets: workout.sets,
+      reps: workout.reps,
+      rest: workout.rest
+    };
 
+    const result = await callApi('addWorkout', data);
+    if (result && result.status === 'success') {
+      successCount++;
+    } else {
+      errorCount++;
+    }
+  }
 
-// ============================================================
-// SHOW EXCEL MESSAGE
-// ============================================================
+  if (errorCount === 0) {
+    showExcelMessage(`✅ Import completed! ${successCount} exercises saved for "${username}".`, 'success');
+  } else {
+    showExcelMessage(`⚠️ Import finished: ${successCount} succeeded, ${errorCount} failed.`, 'error');
+  }
 
-
-function showExcelMessage(
-
-  text,
-
-  type
-
-) {
-
-
-  const el =
-
-    document
-    .getElementById(
-      'excelMessage'
-    );
-
-
-
-  el.textContent =
-
-    text;
-
-
-
-  el.className =
-
-    'message ' +
-    type;
-
-
-
-  el.style.display =
-
-    'block';
-
+  loadUsers();
+  parsedExcelData = null;
 }
 
-
-
-
-
 // ============================================================
-// SHOW GENERAL MESSAGE
+// SHOW MESSAGES
 // ============================================================
-
-
-function showMessage(
-
-  elementId,
-
-  text,
-
-  type
-
-) {
-
-
-  const el =
-
-    document
-    .getElementById(
-      elementId
-    );
-
-
-
-  el.textContent =
-
-    text;
-
-
-
-  el.className =
-
-    'message ' +
-    type;
-
-
-
-  el.style.display =
-
-    'block';
-
-
-
-  setTimeout(
-
-    () => {
-
-      el.style.display =
-        'none';
-
-    },
-
-    5000
-
-  );
-
+function showExcelMessage(text, type) {
+  const el = document.getElementById('excelMessage');
+  el.textContent = text;
+  el.className = 'message ' + type;
+  el.style.display = 'block';
 }
 
-
-
-
-
-// ============================================================
-// BASIC HTML ESCAPE
-// ============================================================
-
+function showMessage(elementId, text, type) {
+  const el = document.getElementById(elementId);
+  el.textContent = text;
+  el.className = 'message ' + type;
+  el.style.display = 'block';
+  setTimeout(() => { el.style.display = 'none'; }, 5000);
+}
 
 function escapeHtml(value) {
-
-
   return String(value || '')
-
-    .replace(
-      /&/g,
-      '&amp;'
-    )
-
-    .replace(
-      /</g,
-      '&lt;'
-    )
-
-    .replace(
-      />/g,
-      '&gt;'
-    )
-
-    .replace(
-      /"/g,
-      '&quot;'
-    )
-
-    .replace(
-      /'/g,
-      '&#039;'
-    );
-
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
 }
-
-
-
-
 
 // ============================================================
 // PAGE LOAD
 // ============================================================
-
-
 window.onload = function() {
-
-
-  if (
-
-    document
-    .getElementById('apiUrl')
-    .value
-    .trim()
-
-  ) {
-
-
+  if (document.getElementById('apiUrl').value.trim()) {
     loadUsers();
-
   }
-
 };
-
-
 </script>
-
-
 </body>
-
 </html>
