@@ -1,2305 +1,760 @@
-```html
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Coach - Workout Builder</title>
-
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-
+<!-- Simple Dumbbell Favicon -->
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect x='10' y='35' width='80' height='30' rx='5' fill='%23333'/><rect x='0' y='25' width='20' height='50' rx='5' fill='%23555'/><rect x='80' y='25' width='20' height='50' rx='5' fill='%23555'/></svg>">
 <style>
-* {
-  box-sizing: border-box;
-}
-
-body {
-  font-family: Arial, sans-serif;
-  background: #f4f6f8;
-  margin: 0;
-  padding: 20px;
-  color: #111827;
-}
-
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.card {
-  background: white;
-  border-radius: 12px;
-  padding: 24px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.card h2 {
-  margin-top: 0;
-}
-
-.section-title {
-  background: #111827;
-  color: white;
-  padding: 12px 16px;
-  border-radius: 8px 8px 0 0;
-  margin: 0 -24px 20px -24px;
-}
-
-.form-group {
-  margin-bottom: 16px;
-}
-
-.form-group label {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 6px;
-}
-
-.form-group input,
-.form-group select {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  font-size: 14px;
-}
-
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-
-.form-row-3 {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 16px;
-}
-
-.btn {
-  padding: 12px 24px;
-  border: none;
-  border-radius: 8px;
-  font-size: 15px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.btn-primary {
-  background: #2563eb;
-  color: white;
-}
-
-.btn-primary:hover {
-  background: #1d4ed8;
-}
-
-.btn-success {
-  background: #15803d;
-  color: white;
-}
-
-.btn-success:hover {
-  background: #166534;
-}
-
-.btn-danger {
-  background: #dc2626;
-  color: white;
-}
-
-.btn-warning {
-  background: #f59e0b;
-  color: white;
-}
-
-.btn-secondary {
-  background: #6b7280;
-  color: white;
-}
-
-.message {
-  padding: 12px;
-  border-radius: 8px;
-  margin-top: 12px;
-  display: none;
-}
-
-.message.success {
-  display: block;
-  background: #d1fae5;
-  color: #065f46;
-}
-
-.message.error {
-  display: block;
-  background: #fee2e2;
-  color: #991b1b;
-}
-
-.message.info {
-  display: block;
-  background: #dbeafe;
-  color: #1e40af;
-}
-
-.setup-hint {
-  background: #fef3c7;
-  border-left: 4px solid #f59e0b;
-  padding: 12px 16px;
-  border-radius: 8px;
-  margin-bottom: 16px;
-}
-
-.file-box {
-  border: 2px dashed #9ca3af;
-  border-radius: 10px;
-  padding: 25px;
-  text-align: center;
-  background: #f9fafb;
-}
-
-.file-box input {
-  margin-top: 12px;
-}
-
-.pipeline {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 16px;
-}
-
-.week-box {
-  background: #eef2ff;
-  border: 1px solid #c7d2fe;
-  border-radius: 10px;
-  padding: 12px;
-  min-width: 250px;
-}
-
-.week-title {
-  font-weight: bold;
-  margin-bottom: 10px;
-}
-
-.day-box {
-  background: white;
-  padding: 8px;
-  border-radius: 6px;
-  margin-bottom: 6px;
-  border-left: 4px solid #2563eb;
-}
-
-.day-box.rest {
-  border-left-color: #9ca3af;
-  color: #6b7280;
-}
-
-.table-container {
-  overflow-x: auto;
-  margin-top: 16px;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 14px;
-}
-
-th {
-  background: #f3f4f6;
-  padding: 10px;
-  text-align: left;
-  border: 1px solid #e5e7eb;
-  white-space: nowrap;
-}
-
-td {
-  padding: 10px;
-  border: 1px solid #e5e7eb;
-}
-
-.exercise-count {
-  background: #dcfce7;
-  color: #166534;
-  padding: 3px 8px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: bold;
-}
-
-.major-badge {
-  display: inline-block;
-  background: #dbeafe;
-  color: #1e40af;
-  padding: 5px 10px;
-  border-radius: 12px;
-  font-weight: bold;
-  margin-bottom: 8px;
-}
-
-.upload-status {
-  margin-top: 15px;
-  font-weight: bold;
-}
-
-@media (max-width: 700px) {
-  .form-row,
-  .form-row-3 {
-    grid-template-columns: 1fr;
-  }
-
+  * { box-sizing: border-box; }
   body {
-    padding: 10px;
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
+    margin: 0;
+    padding: 20px;
   }
-
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+  }
   .card {
-    padding: 18px;
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   }
-
+  .card h2 {
+    margin-top: 0;
+    color: #111827;
+  }
+  .form-group {
+    margin-bottom: 16px;
+  }
+  .form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: #374151;
+  }
+  .form-group input, .form-group select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    background: white;
+  }
+  .form-group select {
+    cursor: pointer;
+  }
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .form-row-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+  }
+  .btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  .btn-primary {
+    background: #2563eb;
+    color: white;
+  }
+  .btn-primary:hover {
+    background: #1d4ed8;
+  }
+  .btn-success {
+    background: #15803d;
+    color: white;
+  }
+  .btn-success:hover {
+    background: #166534;
+  }
+  .btn-danger {
+    background: #dc2626;
+    color: white;
+  }
+  .btn-danger:hover {
+    background: #b91c1c;
+  }
+  .btn-warning {
+    background: #f59e0b;
+    color: white;
+  }
+  .btn-warning:hover {
+    background: #d97706;
+  }
+  .btn-secondary {
+    background: #6b7280;
+    color: white;
+  }
+  .btn-secondary:hover {
+    background: #4b5563;
+  }
+  .btn-sm {
+    padding: 6px 12px;
+    font-size: 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .btn-sm.edit {
+    background: #dbeafe;
+    color: #1e40af;
+  }
+  .btn-sm.delete {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+  .message {
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 12px;
+    display: none;
+  }
+  .message.success {
+    display: block;
+    background: #d1fae5;
+    color: #065f46;
+  }
+  .message.error {
+    display: block;
+    background: #fee2e2;
+    color: #991b1b;
+  }
+  .message.info {
+    display: block;
+    background: #dbeafe;
+    color: #1e40af;
+  }
   .section-title {
-    margin-left: -18px;
-    margin-right: -18px;
+    background: #111827;
+    color: white;
+    padding: 12px 16px;
+    border-radius: 8px 8px 0 0;
+    margin: 0 -24px 16px -24px;
+    padding-left: 24px;
   }
-}
+  .setup-hint {
+    background: #fef3c7;
+    border-left: 4px solid #f59e0b;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+  }
+  .table-container {
+    overflow-x: auto;
+    margin-top: 16px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  th {
+    background: #f3f4f6;
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #e5e7eb;
+  }
+  td {
+    padding: 10px;
+    border: 1px solid #e5e7eb;
+  }
+  .tag {
+    display: inline-block;
+    background: #dbeafe;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    color: #1e40af;
+    margin: 2px;
+  }
+  .flex-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  @media (max-width: 600px) {
+    .form-row, .form-row-3 {
+      grid-template-columns: 1fr;
+    }
+  }
 </style>
 </head>
-
 <body>
 
 <div class="container">
+  <h1>👨‍🏫 Coach - Workout Builder</h1>
+  <p>Create and manage workout plans for your clients</p>
 
-<h1>👨‍🏫 Coach - Workout Builder</h1>
-<p>Create workout plans from your Excel roadmap and upload them to Google Sheets.</p>
-
-
-<!-- ========================================================= -->
-<!-- SETUP -->
-<!-- ========================================================= -->
-
-<div class="card">
-
-  <div class="section-title">
-    <h2 style="margin:0;color:white;">🔧 Setup</h2>
-  </div>
-
-  <div class="setup-hint">
-
-    <strong>Excel structure:</strong>
-
-    <br><br>
-
-    <strong>Sheet 1:</strong> Roadmap
-
-    <br>
-    Contains:
-    <code>الأسبوع | اليوم 1 | اليوم 2 | ... | اليوم 7</code>
-
-    <br><br>
-
-    <strong>Sheet 2:</strong> Exercise database
-
-    <br>
-    Each Major section contains:
-    <code>اسم التمرين (ENG)</code>,
-    <code>اسم التمرين (ARB)</code>,
-    <code>العضلة المستهدفة</code>,
-    <code>المجموعات</code>,
-    <code>التكرارات</code>,
-    <code>الراحة</code>
-
-    <br><br>
-
-    <strong>Important:</strong>
-    <code>Lower A & B</code> exercises are automatically used for both
-    <code>Lower A</code> and <code>Lower B</code>.
-
-  </div>
-
-
-  <div class="form-group">
-
-    <label>Google Apps Script Web App URL</label>
-
-    <input
-      type="text"
-      id="apiUrl"
-      value=""
-      placeholder="https://script.google.com/macros/s/XXXXXXXX/exec"
-    >
-
-  </div>
-
-
-  <div class="form-row">
-
-    <div class="form-group">
-
-      <label>Username *</label>
-
-      <input
-        type="text"
-        id="username"
-        placeholder="e.g. john_doe"
-      >
-
+  <div class="card">
+    <div class="section-title">
+      <h2 style="margin:0;color:white;">🔧 Setup</h2>
     </div>
-
+    <div class="setup-hint">
+      <strong>Google Sheet Structure (Single Sheet):</strong><br>
+      Create a sheet named <strong>"WorkoutData"</strong> with these columns:<br>
+      <code>Username | Week | Day | Major | Exercise | Arabic | Muscle | Sets | Reps | Rest</code>
+    </div>
     <div class="form-group">
+      <label>Google Apps Script Web App URL</label>
+      <input type="text" id="apiUrl" placeholder="https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec" style="width:100%;padding:10px;border:1px solid #d1d5db;border-radius:8px;">
+      <small style="color:#6b7280;">Deploy your script and paste the URL here</small>
+    </div>
+    <div class="flex-row">
+      <button class="btn btn-primary" onclick="loadUsers()">📥 Load Users</button>
+      <button class="btn btn-secondary" onclick="testConnection()">🔌 Test Connection</button>
+    </div>
+    <div id="userList" style="margin-top:12px;"></div>
+  </div>
 
-      <label>Excel File *</label>
-
-      <div class="file-box">
-
-        Select your Excel workbook
-
-        <br>
-
-        <input
-          type="file"
-          id="excelFile"
-          accept=".xlsx,.xls"
-        >
-
+  <div class="card">
+    <div class="section-title">
+      <h2 style="margin:0;color:white;">📝 Add/Edit Exercise</h2>
+    </div>
+    
+    <div class="form-row">
+      <div class="form-group">
+        <label>Username *</label>
+        <input type="text" id="username" placeholder="e.g., john_doe" list="userSuggestions">
+        <datalist id="userSuggestions"></datalist>
       </div>
-
+      <div class="form-group">
+        <label>Week *</label>
+        <select id="week">
+          <option value="">-- Select Week --</option>
+          <option value="Week 1">Week 1</option>
+          <option value="Week 2">Week 2</option>
+          <option value="Week 3">Week 3</option>
+          <option value="Week 4">Week 4</option>
+          <option value="Week 5">Week 5</option>
+          <option value="Week 6">Week 6</option>
+          <option value="Week 7">Week 7</option>
+          <option value="Week 8">Week 8</option>
+          <option value="Week 9">Week 9</option>
+          <option value="Week 10">Week 10</option>
+          <option value="Week 11">Week 11</option>
+          <option value="Week 12">Week 12</option>
+        </select>
+      </div>
     </div>
-
+    
+    <div class="form-row">
+      <div class="form-group">
+        <label>Day *</label>
+        <select id="day">
+          <option value="">-- Select Day --</option>
+          <option value="Day 1">Day 1</option>
+          <option value="Day 2">Day 2</option>
+          <option value="Day 3">Day 3</option>
+          <option value="Day 4">Day 4</option>
+          <option value="Day 5">Day 5</option>
+          <option value="Day 6">Day 6</option>
+          <option value="Day 7">Day 7</option>
+          <option value="Monday">Monday</option>
+          <option value="Tuesday">Tuesday</option>
+          <option value="Wednesday">Wednesday</option>
+          <option value="Thursday">Thursday</option>
+          <option value="Friday">Friday</option>
+          <option value="Saturday">Saturday</option>
+          <option value="Sunday">Sunday</option>
+          <option value="Rest Day">Rest Day</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Major / Workout Name</label>
+        <select id="major">
+          <option value="">-- Select Major --</option>
+          <option value="Upper A - Chest & Back">Upper A - Chest & Back</option>
+          <option value="Upper B - Shoulders & Lats">Upper B - Shoulders & Lats</option>
+          <option value="Lower A - Quads & Glutes">Lower A - Quads & Glutes</option>
+          <option value="Lower B - Hamstrings & Glutes">Lower B - Hamstrings & Glutes</option>
+          <option value="Full Body">Full Body</option>
+          <option value="Push Day">Push Day</option>
+          <option value="Pull Day">Pull Day</option>
+          <option value="Leg Day">Leg Day</option>
+          <option value="Cardio">Cardio</option>
+          <option value="Active Recovery">Active Recovery</option>
+        </select>
+      </div>
+    </div>
+    
+    <div class="form-row">
+      <div class="form-group">
+        <label>Exercise (English) *</label>
+        <input type="text" id="exercise" placeholder="e.g., Incline Barbell Chest Press" list="exerciseSuggestions">
+        <datalist id="exerciseSuggestions">
+          <option value="Incline Barbell Chest Press">
+          <option value="Flat Barbell Bench Press">
+          <option value="Dumbbell Bench Press">
+          <option value="Lat Pulldown">
+          <option value="Seated Cable Row">
+          <option value="Bent Over Row">
+          <option value="Shoulder Press">
+          <option value="Lateral Raises">
+          <option value="Front Raises">
+          <option value="Bicep Curls">
+          <option value="Tricep Pushdowns">
+          <option value="Squats">
+          <option value="Deadlifts">
+          <option value="Leg Press">
+          <option value="Leg Extensions">
+          <option value="Leg Curls">
+          <option value="Calf Raises">
+          <option value="Planks">
+          <option value="Push-ups">
+          <option value="Pull-ups">
+        </datalist>
+      </div>
+      <div class="form-group">
+        <label>Exercise (Arabic)</label>
+        <input type="text" id="arabic" placeholder="e.g., بنش مائل بالبار">
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label>Target Muscle</label>
+      <select id="muscle">
+        <option value="">-- Select Muscle --</option>
+        <option value="الصدر العلوي">الصدر العلوي</option>
+        <option value="الصدر السفلي">الصدر السفلي</option>
+        <option value="الصدر الأوسط">الصدر الأوسط</option>
+        <option value="الصدر كامل">الصدر كامل</option>
+        <option value="الظهر / اللاتس">الظهر / اللاتس</option>
+        <option value="أعلى الظهر">أعلى الظهر</option>
+        <option value="وسط الظهر">وسط الظهر</option>
+        <option value="أسفل الظهر">أسفل الظهر</option>
+        <option value="الكتف الأمامي">الكتف الأمامي</option>
+        <option value="الكتف الجانبي">الكتف الجانبي</option>
+        <option value="الكتف الخلفي">الكتف الخلفي</option>
+        <option value="الكتف الجانبي والعلوي">الكتف الجانبي والعلوي</option>
+        <option value="البايسبس">البايسبس</option>
+        <option value="الترايسبس">الترايسبس</option>
+        <option value="الساعد">الساعد</option>
+        <option value="الفخذ الأمامي">الفخذ الأمامي</option>
+        <option value="الفخذ الخلفي">الفخذ الخلفي</option>
+        <option value="المؤخرة">المؤخرة</option>
+        <option value="الساق">الساق</option>
+        <option value="البطن">البطن</option>
+        <option value="الجذع">الجذع</option>
+        <option value="عضلة الساعد والباي">عضلة الساعد والباي</option>
+        <option value="الرأس الطويل للتراي">الرأس الطويل للتراي</option>
+        <option value="المجنص السفلي (Lats)">المجنص السفلي (Lats)</option>
+        <option value="الترابيس العلوية">الترابيس العلوية</option>
+        <option value="عزل الصدر">عزل الصدر</option>
+        <option value="عزل الأماميات">عزل الأماميات</option>
+        <option value="عزل الخلفيات">عزل الخلفيات</option>
+      </select>
+    </div>
+    
+    <div class="form-row-3">
+      <div class="form-group">
+        <label>Sets</label>
+        <select id="sets">
+          <option value="">--</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Reps</label>
+        <select id="reps">
+          <option value="">--</option>
+          <option value="4-6">4-6</option>
+          <option value="6-8">6-8</option>
+          <option value="8-10">8-10</option>
+          <option value="10-12">10-12</option>
+          <option value="12-15">12-15</option>
+          <option value="15-20">15-20</option>
+          <option value="AMRAP">AMRAP</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Rest</label>
+        <select id="rest">
+          <option value="">--</option>
+          <option value="30 ثانية">30 ثانية</option>
+          <option value="45 ثانية">45 ثانية</option>
+          <option value="60 ثانية">60 ثانية</option>
+          <option value="90 ثانية">90 ثانية</option>
+          <option value="2 دقائق">2 دقائق</option>
+          <option value="2.5-3 دقائق">2.5-3 دقائق</option>
+          <option value="3 دقائق">3 دقائق</option>
+          <option value="3-4 دقائق">3-4 دقائق</option>
+          <option value="4-5 دقائق">4-5 دقائق</option>
+        </select>
+      </div>
+    </div>
+    
+    <div class="flex-row">
+      <button class="btn btn-success" onclick="addWorkout()">➕ Add/Update Exercise</button>
+      <button class="btn btn-danger" onclick="deleteWorkout()">🗑️ Delete Exercise</button>
+      <button class="btn btn-warning" onclick="clearForm()">🔄 Clear Form</button>
+    </div>
+    <div id="addMessage" class="message"></div>
   </div>
 
-
-  <div style="display:flex;gap:10px;flex-wrap:wrap;">
-
-    <button
-      class="btn btn-primary"
-      onclick="loadExcel()"
-    >
-      📥 Load Excel & Build Preview
-    </button>
-
-    <button
-      class="btn btn-warning"
-      onclick="clearAll()"
-    >
-      🔄 Clear
-    </button>
-
+  <div class="card">
+    <div class="section-title">
+      <h2 style="margin:0;color:white;">📋 View & Manage Workouts</h2>
+    </div>
+    <div class="form-group">
+      <label>Select Username to View</label>
+      <div class="flex-row">
+        <input type="text" id="viewUsername" placeholder="Enter username" style="flex:1;padding:10px;border:1px solid #d1d5db;border-radius:8px;" list="viewUserSuggestions">
+        <datalist id="viewUserSuggestions"></datalist>
+        <button class="btn btn-primary" onclick="viewWorkout()">👁️ View</button>
+        <button class="btn btn-secondary" onclick="refreshView()">🔄 Refresh</button>
+      </div>
+    </div>
+    <div id="viewContent"></div>
   </div>
-
-
-  <div id="excelMessage" class="message"></div>
-
 </div>
-
-
-
-<!-- ========================================================= -->
-<!-- PIPELINE PREVIEW -->
-<!-- ========================================================= -->
-
-<div class="card">
-
-  <div class="section-title">
-    <h2 style="margin:0;color:white;">🗺️ Workout Roadmap</h2>
-  </div>
-
-  <div id="pipelineContent">
-
-    <p style="color:#6b7280;">
-      Load an Excel file to see the roadmap.
-    </p>
-
-  </div>
-
-</div>
-
-
-
-<!-- ========================================================= -->
-<!-- WORKOUT PREVIEW -->
-<!-- ========================================================= -->
-
-<div class="card">
-
-  <div class="section-title">
-    <h2 style="margin:0;color:white;">📋 Workout Preview</h2>
-  </div>
-
-  <div id="previewContent">
-
-    <p style="color:#6b7280;">
-      Workout preview will appear here.
-    </p>
-
-  </div>
-
-</div>
-
-
-
-<!-- ========================================================= -->
-<!-- GOOGLE SHEET -->
-<!-- ========================================================= -->
-
-<div class="card">
-
-  <div class="section-title">
-    <h2 style="margin:0;color:white;">☁️ Google Sheet</h2>
-  </div>
-
-
-  <div class="setup-hint">
-
-    The imported workout will be converted into:
-
-    <br><br>
-
-    <code>
-    Username | Week | Day | Major | Exercise | Arabic |
-    Muscle | Sets | Reps | Rest
-    </code>
-
-  </div>
-
-
-  <button
-    class="btn btn-success"
-    onclick="uploadToGoogleSheet()"
-  >
-    ☁️ Upload Workout to Google Sheet
-  </button>
-
-
-  <div id="uploadMessage" class="message"></div>
-
-</div>
-
-</div>
-
 
 <script>
-
-/* ============================================================
-   GLOBAL DATA
-============================================================ */
-
-let currentWorkoutData = [];
-let currentPipeline = [];
-
+// ============================================================
+// CONFIGURATION
+// ============================================================
 const STORAGE_KEY = 'coach_api_url';
 
+const savedUrl = localStorage.getItem(STORAGE_KEY);
+if (savedUrl) {
+  document.getElementById('apiUrl').value = savedUrl;
+}
 
-/* ============================================================
-   LOAD SAVED API URL
-============================================================ */
-
-window.addEventListener('load', function() {
-
-  const savedUrl = localStorage.getItem(STORAGE_KEY);
-
-  if (savedUrl) {
-
-    document.getElementById('apiUrl').value = savedUrl;
-
-  }
-
+document.getElementById('apiUrl').addEventListener('change', function() {
+  localStorage.setItem(STORAGE_KEY, this.value);
 });
 
-
-document
-.getElementById('apiUrl')
-.addEventListener('change', function() {
-
-  localStorage.setItem(
-    STORAGE_KEY,
-    this.value.trim()
-  );
-
-});
-
-
-/* ============================================================
-   NORMALIZE TEXT
-============================================================ */
-
-function normalizeText(value) {
-
-  return String(value || '')
-    .replace(/\u00A0/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-
-}
-
-
-/* ============================================================
-   NORMALIZE MAJOR
-============================================================ */
-
-function normalizeMajor(value) {
-
-  const text = normalizeText(value);
-
-  const lower = text.toLowerCase();
-
-  if (
-    lower.includes('upper') &&
-    lower.includes('a')
-  ) {
-
-    return 'Upper A';
-
-  }
-
-  if (
-    lower.includes('upper') &&
-    lower.includes('b')
-  ) {
-
-    return 'Upper B';
-
-  }
-
-  if (
-    lower.includes('lower') &&
-    lower.includes('a')
-  ) {
-
-    return 'Lower A';
-
-  }
-
-  if (
-    lower.includes('lower') &&
-    lower.includes('b')
-  ) {
-
-    return 'Lower B';
-
-  }
-
-  return text;
-
-}
-
-
-/* ============================================================
-   EXTRACT MAJOR FROM TITLE
-============================================================ */
-
-function detectMajorFromTitle(value) {
-
-  const text = normalizeText(value);
-
-  const lower = text.toLowerCase();
-
-  if (
-    lower.includes('lower') &&
-    lower.includes('a') &&
-    lower.includes('b')
-  ) {
-
-    return 'Lower A & B';
-
-  }
-
-  if (
-    lower.includes('upper') &&
-    lower.includes('a')
-  ) {
-
-    return 'Upper A';
-
-  }
-
-  if (
-    lower.includes('upper') &&
-    lower.includes('b')
-  ) {
-
-    return 'Upper B';
-
-  }
-
-  if (
-    lower.includes('lower') &&
-    lower.includes('a')
-  ) {
-
-    return 'Lower A';
-
-  }
-
-  if (
-    lower.includes('lower') &&
-    lower.includes('b')
-  ) {
-
-    return 'Lower B';
-
-  }
-
-  return '';
-
-}
-
-
-/* ============================================================
-   FIND ROADMAP HEADER
-============================================================ */
-
-function findRoadmapHeader(rows) {
-
-  for (let r = 0; r < rows.length; r++) {
-
-    const row = rows[r] || [];
-
-    for (let c = 0; c < row.length; c++) {
-
-      const value = normalizeText(row[c]);
-
-      if (value === 'الأسبوع') {
-
-        return r;
-
-      }
-
-    }
-
-  }
-
-  return -1;
-
-}
-
-
-/* ============================================================
-   PARSE SHEET 1 - ROADMAP
-============================================================ */
-
-function parseRoadmap(rows) {
-
-  const headerRowIndex =
-    findRoadmapHeader(rows);
-
-  if (headerRowIndex === -1) {
-
-    throw new Error(
-      'Could not find "الأسبوع" header in Sheet 1.'
-    );
-
-  }
-
-
-  const header =
-    rows[headerRowIndex];
-
-
-  let dayColumns = [];
-
-
-  for (
-    let c = 0;
-    c < header.length;
-    c++
-  ) {
-
-    const value =
-      normalizeText(header[c]);
-
-
-    if (
-      value &&
-      value.includes('اليوم')
-    ) {
-
-      dayColumns.push({
-
-        index: c,
-
-        label: value
-
-      });
-
-    }
-
-  }
-
-
-  if (dayColumns.length === 0) {
-
-    throw new Error(
-      'No Day columns found in Sheet 1.'
-    );
-
-  }
-
-
-  const roadmap = [];
-
-
-  for (
-    let r = headerRowIndex + 1;
-    r < rows.length;
-    r++
-  ) {
-
-    const row = rows[r] || [];
-
-
-    const week =
-      normalizeText(row[0]);
-
-
-    if (!week) {
-
-      continue;
-
-    }
-
-
-    if (
-      !week.includes('الأسبوع')
-    ) {
-
-      continue;
-
-    }
-
-
-    const days = [];
-
-
-    dayColumns.forEach(dayCol => {
-
-      const dayValue =
-        normalizeText(
-          row[dayCol.index]
-        );
-
-
-      if (!dayValue) {
-
-        return;
-
-      }
-
-
-      const isRest =
-        dayValue
-          .toLowerCase()
-          .includes('راحة');
-
-
-      days.push({
-
-        label: dayCol.label,
-
-        value: dayValue,
-
-        major: isRest
-          ? ''
-          : normalizeMajor(dayValue),
-
-        type: isRest
-          ? 'rest'
-          : 'workout'
-
-      });
-
-    });
-
-
-    if (days.length > 0) {
-
-      roadmap.push({
-
-        week: week,
-
-        days: days
-
-      });
-
-    }
-
-  }
-
-
-  return roadmap;
-
-}
-
-
-/* ============================================================
-   FIND EXERCISE HEADER
-============================================================ */
-
-function isExerciseHeaderRow(row) {
-
-  if (!row) {
-
-    return false;
-
-  }
-
-
-  return row.some(cell =>
-
-    normalizeText(cell) ===
-    'اسم التمرين (ENG)'
-
-  );
-
-}
-
-
-/* ============================================================
-   FIND COLUMN INDEX
-============================================================ */
-
-function findColumn(row, names) {
-
-  for (
-    let c = 0;
-    c < row.length;
-    c++
-  ) {
-
-    const value =
-      normalizeText(row[c]);
-
-
-    if (
-      names.includes(value)
-    ) {
-
-      return c;
-
-    }
-
-  }
-
-
-  return -1;
-
-}
-
-
-/* ============================================================
-   PARSE SHEET 2
-============================================================ */
-
-function parseExerciseDatabase(rows) {
-
-  const majorExercises = {};
-
-
-  let currentMajor = '';
-
-  let currentColumns = null;
-
-
-  for (
-    let r = 0;
-    r < rows.length;
-    r++
-  ) {
-
-    const row = rows[r] || [];
-
-
-    /* --------------------------------------------------------
-       STEP 1: Detect exercise header
-    -------------------------------------------------------- */
-
-    if (
-      isExerciseHeaderRow(row)
-    ) {
-
-      currentColumns = {
-
-        eng: findColumn(
-          row,
-          ['اسم التمرين (ENG)']
-        ),
-
-        arb: findColumn(
-          row,
-          ['اسم التمرين (ARB)']
-        ),
-
-        muscle: findColumn(
-          row,
-          ['العضلة المستهدفة']
-        ),
-
-        sets: findColumn(
-          row,
-          ['المجموعات']
-        ),
-
-        reps: findColumn(
-          row,
-          ['التكرارات']
-        ),
-
-        rest: findColumn(
-          row,
-          ['الراحة']
-        ),
-
-        targetWeight: findColumn(
-          row,
-          ['الوزن المستهدف']
-        ),
-
-        achievedReps: findColumn(
-          row,
-          ['العدات المحققة']
-        )
-
-      };
-
-
-      continue;
-
-    }
-
-
-    /* --------------------------------------------------------
-       STEP 2: Detect Major title
-       Search the entire row.
-    -------------------------------------------------------- */
-
-    let detectedMajor = '';
-
-
-    for (
-      let c = 0;
-      c < row.length;
-      c++
-    ) {
-
-      const value =
-        normalizeText(row[c]);
-
-
-      if (!value) {
-
-        continue;
-
-      }
-
-
-      const possibleMajor =
-        detectMajorFromTitle(value);
-
-
-      if (possibleMajor) {
-
-        detectedMajor =
-          possibleMajor;
-
-        break;
-
-      }
-
-    }
-
-
-    if (detectedMajor) {
-
-      currentMajor =
-        detectedMajor;
-
-
-      if (
-        !majorExercises[currentMajor]
-      ) {
-
-        majorExercises[currentMajor] = [];
-
-      }
-
-
-      continue;
-
-    }
-
-
-    /* --------------------------------------------------------
-       STEP 3: Read exercise row
-    -------------------------------------------------------- */
-
-    if (
-      !currentMajor ||
-      !currentColumns
-    ) {
-
-      continue;
-
-    }
-
-
-    const eng =
-      normalizeText(
-        row[currentColumns.eng]
-      );
-
-
-    /*
-      Ignore blank rows and rows that are
-      not exercise data.
-    */
-
-    if (!eng) {
-
-      continue;
-
-    }
-
-
-    /*
-      If another section title appears
-      unexpectedly, do not treat it
-      as an exercise.
-    */
-
-    if (
-      eng === 'اسم التمرين (ENG)'
-    ) {
-
-      continue;
-
-    }
-
-
-    const exercise = {
-
-      eng: eng,
-
-      arb:
-        currentColumns.arb !== -1
-          ? normalizeText(
-              row[currentColumns.arb]
-            )
-          : '',
-
-      muscle:
-        currentColumns.muscle !== -1
-          ? normalizeText(
-              row[currentColumns.muscle]
-            )
-          : '',
-
-      sets:
-        currentColumns.sets !== -1
-          ? normalizeText(
-              row[currentColumns.sets]
-            )
-          : '',
-
-      reps:
-        currentColumns.reps !== -1
-          ? normalizeText(
-              row[currentColumns.reps]
-            )
-          : '',
-
-      rest:
-        currentColumns.rest !== -1
-          ? normalizeText(
-              row[currentColumns.rest]
-            )
-          : '',
-
-      targetWeight:
-        currentColumns.targetWeight !== -1
-          ? normalizeText(
-              row[currentColumns.targetWeight]
-            )
-          : '',
-
-      achievedReps:
-        currentColumns.achievedReps !== -1
-          ? normalizeText(
-              row[currentColumns.achievedReps]
-            )
-          : ''
-
-    };
-
-
-    majorExercises[currentMajor].push(
-      exercise
-    );
-
-  }
-
-
-  return majorExercises;
-
-}
-
-
-/* ============================================================
-   GET EXERCISES FOR MAJOR
-============================================================ */
-
-function getExercisesForMajor(
-  major,
-  majorExercises
-) {
-
-  if (!major) {
-
-    return [];
-
-  }
-
-
-  const normalized =
-    normalizeMajor(major);
-
-
-  /*
-    Lower A & B in Excel
-    supplies BOTH Lower A and Lower B.
-  */
-
-  if (
-    normalized === 'Lower A' ||
-    normalized === 'Lower B'
-  ) {
-
-    if (
-      majorExercises['Lower A & B']
-    ) {
-
-      return majorExercises[
-        'Lower A & B'
-      ];
-
-    }
-
-  }
-
-
-  if (
-    majorExercises[normalized]
-  ) {
-
-    return majorExercises[
-      normalized
-    ];
-
-  }
-
-
-  return [];
-
-}
-
-
-/* ============================================================
-   BUILD WORKOUT DATA
-============================================================ */
-
-function buildWorkoutData(
-  roadmap,
-  majorExercises
-) {
-
-  const workoutData = [];
-
-
-  roadmap.forEach(
-    weekData => {
-
-      weekData.days.forEach(
-        dayData => {
-
-          if (
-            dayData.type === 'rest'
-          ) {
-
-            return;
-
-          }
-
-
-          const major =
-            dayData.major;
-
-
-          const exercises =
-            getExercisesForMajor(
-              major,
-              majorExercises
-            );
-
-
-          exercises.forEach(
-            exercise => {
-
-              workoutData.push({
-
-                week:
-                  weekData.week,
-
-                day:
-                  dayData.value,
-
-                major:
-                  major,
-
-                eng:
-                  exercise.eng,
-
-                arb:
-                  exercise.arb,
-
-                muscle:
-                  exercise.muscle,
-
-                sets:
-                  exercise.sets,
-
-                reps:
-                  exercise.reps,
-
-                rest:
-                  exercise.rest,
-
-                targetWeight:
-                  exercise.targetWeight,
-
-                achievedReps:
-                  exercise.achievedReps
-
-              });
-
-            }
-
-          );
-
-        }
-
-      );
-
-    }
-
-  );
-
-
-  return workoutData;
-
-}
-
-
-/* ============================================================
-   LOAD EXCEL
-============================================================ */
-
-function loadExcel() {
-
-  const fileInput =
-    document.getElementById(
-      'excelFile'
-    );
-
-
-  const file =
-    fileInput.files[0];
-
-
-  if (!file) {
-
-    showMessage(
-      'excelMessage',
-      'Please select an Excel file.',
-      'error'
-    );
-
-    return;
-
-  }
-
-
-  const username =
-    document.getElementById(
-      'username'
-    ).value.trim();
-
-
-  if (!username) {
-
-    showMessage(
-      'excelMessage',
-      'Please enter a Username first.',
-      'error'
-    );
-
-    return;
-
-  }
-
-
-  showMessage(
-    'excelMessage',
-    'Reading Excel file...',
-    'info'
-  );
-
-
-  const reader =
-    new FileReader();
-
-
-  reader.onload =
-    function(event) {
-
-      try {
-
-        const data =
-          new Uint8Array(
-            event.target.result
-          );
-
-
-        const workbook =
-          XLSX.read(
-            data,
-            {
-              type: 'array'
-            }
-          );
-
-
-        if (
-          workbook.SheetNames.length < 2
-        ) {
-
-          throw new Error(
-            'The Excel file must contain at least 2 sheets.'
-          );
-
-        }
-
-
-        /* ----------------------------------------------------
-           SHEET 1
-        ---------------------------------------------------- */
-
-        const roadmapSheet =
-          workbook.Sheets[
-            workbook.SheetNames[0]
-          ];
-
-
-        const roadmapRows =
-          XLSX.utils.sheet_to_json(
-            roadmapSheet,
-            {
-              header: 1,
-              defval: ''
-            }
-          );
-
-
-        const roadmap =
-          parseRoadmap(
-            roadmapRows
-          );
-
-
-        /* ----------------------------------------------------
-           SHEET 2
-        ---------------------------------------------------- */
-
-        const exerciseSheet =
-          workbook.Sheets[
-            workbook.SheetNames[1]
-          ];
-
-
-        const exerciseRows =
-          XLSX.utils.sheet_to_json(
-            exerciseSheet,
-            {
-              header: 1,
-              defval: ''
-            }
-          );
-
-
-        const majorExercises =
-          parseExerciseDatabase(
-            exerciseRows
-          );
-
-
-        /* ----------------------------------------------------
-           BUILD FINAL DATA
-        ---------------------------------------------------- */
-
-        currentPipeline =
-          roadmap;
-
-
-        currentWorkoutData =
-          buildWorkoutData(
-            roadmap,
-            majorExercises
-          );
-
-
-        if (
-          currentWorkoutData.length === 0
-        ) {
-
-          throw new Error(
-            'No workout exercises found. Please check your Excel structure.'
-          );
-
-        }
-
-
-        renderPipeline(
-          currentPipeline
-        );
-
-
-        renderPreview(
-          currentWorkoutData
-        );
-
-
-        const majorSummary =
-          Object.entries(
-            majorExercises
-          )
-          .map(
-            ([major, exercises]) =>
-              `${major}: ${exercises.length}`
-          )
-          .join(' | ');
-
-
-        showMessage(
-          'excelMessage',
-          `✅ Excel loaded successfully. ${currentWorkoutData.length} workout rows created. ${majorSummary}`,
-          'success'
-        );
-
-
-      } catch(error) {
-
-        console.error(
-          error
-        );
-
-
-        showMessage(
-          'excelMessage',
-          '❌ ' + error.message,
-          'error'
-        );
-
-      }
-
-    };
-
-
-  reader.readAsArrayBuffer(
-    file
-  );
-
-}
-
-
-/* ============================================================
-   RENDER PIPELINE
-============================================================ */
-
-function renderPipeline(
-  pipeline
-) {
-
-  const container =
-    document.getElementById(
-      'pipelineContent'
-    );
-
-
-  if (
-    !pipeline ||
-    pipeline.length === 0
-  ) {
-
-    container.innerHTML =
-      '<p>No roadmap found.</p>';
-
-    return;
-
-  }
-
-
-  let html =
-    '<div class="pipeline">';
-
-
-  pipeline.forEach(
-    week => {
-
-      html += `
-        <div class="week-box">
-
-          <div class="week-title">
-            ${escapeHtml(week.week)}
-          </div>
-      `;
-
-
-      week.days.forEach(
-        day => {
-
-          html += `
-
-            <div class="day-box ${
-              day.type === 'rest'
-                ? 'rest'
-                : ''
-            }">
-
-              <strong>
-                ${escapeHtml(day.label)}
-              </strong>
-
-              <br>
-
-              ${
-                day.type === 'rest'
-                  ? '🛌 ' +
-                    escapeHtml(day.value)
-                  : '🏋️ ' +
-                    escapeHtml(day.value)
-              }
-
-            </div>
-
-          `;
-
-        }
-
-      );
-
-
-      html += `
-        </div>
-      `;
-
-    }
-
-  );
-
-
-  html += '</div>';
-
-
-  container.innerHTML =
-    html;
-
-}
-
-
-/* ============================================================
-   RENDER WORKOUT PREVIEW
-============================================================ */
-
-function renderPreview(
-  workoutData
-) {
-
-  const container =
-    document.getElementById(
-      'previewContent'
-    );
-
-
-  if (
-    !workoutData ||
-    workoutData.length === 0
-  ) {
-
-    container.innerHTML =
-      '<p>No exercises found.</p>';
-
-    return;
-
-  }
-
-
-  const grouped = {};
-
-
-  workoutData.forEach(
-    row => {
-
-      const key =
-        row.week +
-        '||' +
-        row.day +
-        '||' +
-        row.major;
-
-
-      if (
-        !grouped[key]
-      ) {
-
-        grouped[key] = [];
-
-      }
-
-
-      grouped[key].push(
-        row
-      );
-
-    }
-
-  );
-
-
-  let html = '';
-
-
-  Object.entries(
-    grouped
-  ).forEach(
-    ([key, exercises]) => {
-
-      const first =
-        exercises[0];
-
-
-      html += `
-
-        <div style="
-          margin-bottom:25px;
-          border:1px solid #e5e7eb;
-          border-radius:10px;
-          overflow:hidden;
-        ">
-
-          <div style="
-            background:#f3f4f6;
-            padding:14px;
-          ">
-
-            <strong>
-              ${escapeHtml(first.week)}
-            </strong>
-
-            &nbsp; → &nbsp;
-
-            ${escapeHtml(first.day)}
-
-            <br>
-
-            <span class="major-badge">
-              ${escapeHtml(first.major)}
-            </span>
-
-            <span class="exercise-count">
-              ${exercises.length} exercises
-            </span>
-
-          </div>
-
-
-          <div class="table-container">
-
-            <table>
-
-              <thead>
-
-                <tr>
-
-                  <th>#</th>
-
-                  <th>Exercise ENG</th>
-
-                  <th>Exercise ARB</th>
-
-                  <th>Muscle</th>
-
-                  <th>Sets</th>
-
-                  <th>Reps</th>
-
-                  <th>Rest</th>
-
-                  <th>Target Weight</th>
-
-                  <th>Achieved Reps</th>
-
-                </tr>
-
-              </thead>
-
-              <tbody>
-      `;
-
-
-      exercises.forEach(
-        (ex, index) => {
-
-          html += `
-
-            <tr>
-
-              <td>
-                ${index + 1}
-              </td>
-
-              <td>
-                <strong>
-                  ${escapeHtml(ex.eng)}
-                </strong>
-              </td>
-
-              <td>
-                ${escapeHtml(ex.arb)}
-              </td>
-
-              <td>
-                ${escapeHtml(ex.muscle)}
-              </td>
-
-              <td>
-                ${escapeHtml(ex.sets)}
-              </td>
-
-              <td>
-                ${escapeHtml(ex.reps)}
-              </td>
-
-              <td>
-                ${escapeHtml(ex.rest)}
-              </td>
-
-              <td>
-                ${escapeHtml(ex.targetWeight)}
-              </td>
-
-              <td>
-                ${escapeHtml(ex.achievedReps)}
-              </td>
-
-            </tr>
-
-          `;
-
-        }
-
-      );
-
-
-      html += `
-
-              </tbody>
-
-            </table>
-
-          </div>
-
-        </div>
-
-      `;
-
-    }
-
-  );
-
-
-  container.innerHTML =
-    html;
-
-}
-
-
-/* ============================================================
-   GOOGLE API
-   IMPORTANT:
-   GET ONLY.
-   This avoids the CORS preflight caused by POST + JSON.
-============================================================ */
-
-async function callApi(
-  action,
-  data = {}
-) {
-
-  const baseUrl =
-    document
-      .getElementById(
-        'apiUrl'
-      )
-      .value
-      .trim();
-
+// ============================================================
+// API CALLS
+// ============================================================
+async function callApi(action, data = {}) {
+  const baseUrl = document.getElementById('apiUrl').value.trim();
 
   if (!baseUrl) {
-
-    throw new Error(
-      'Please enter your Google Apps Script Web App URL.'
-    );
-
-  }
-
-
-  localStorage.setItem(
-    STORAGE_KEY,
-    baseUrl
-  );
-
-
-  const params =
-    new URLSearchParams();
-
-
-  params.append(
-    'action',
-    action
-  );
-
-
-  Object.keys(
-    data
-  ).forEach(
-    key => {
-
-      if (
-        data[key] !== undefined &&
-        data[key] !== null
-      ) {
-
-        params.append(
-          key,
-          data[key]
-        );
-
-      }
-
-    }
-
-  );
-
-
-  const url =
-    baseUrl +
-    '?' +
-    params.toString();
-
-
-  console.log(
-    'API Request:',
-    url
-  );
-
-
-  const response =
-    await fetch(
-      url,
-      {
-        method: 'GET'
-      }
-    );
-
-
-  if (
-    !response.ok
-  ) {
-
-    throw new Error(
-      'HTTP Error ' +
-      response.status
-    );
-
-  }
-
-
-  const result =
-    await response.json();
-
-
-  console.log(
-    'API Response:',
-    result
-  );
-
-
-  return result;
-
-}
-
-
-/* ============================================================
-   UPLOAD TO GOOGLE SHEET
-============================================================ */
-
-async function uploadToGoogleSheet() {
-
-  const username =
-    document
-      .getElementById(
-        'username'
-      )
-      .value
-      .trim();
-
-
-  if (!username) {
-
     showMessage(
-      'uploadMessage',
-      'Please enter a Username.',
+      'addMessage',
+      'Please enter your Google Apps Script URL',
       'error'
     );
-
-    return;
-
+    return null;
   }
-
-
-  if (
-    !currentWorkoutData ||
-    currentWorkoutData.length === 0
-  ) {
-
-    showMessage(
-      'uploadMessage',
-      'Please load an Excel file first.',
-      'error'
-    );
-
-    return;
-
-  }
-
-
-  const apiUrl =
-    document
-      .getElementById(
-        'apiUrl'
-      )
-      .value
-      .trim();
-
-
-  if (!apiUrl) {
-
-    showMessage(
-      'uploadMessage',
-      'Please enter the Google Apps Script URL.',
-      'error'
-    );
-
-    return;
-
-  }
-
-
-  const total =
-    currentWorkoutData.length;
-
-
-  showMessage(
-    'uploadMessage',
-    `Uploading ${total} exercises...`,
-    'info'
-  );
-
 
   try {
+    // Build GET parameters
+    const params = new URLSearchParams();
 
-    let successCount = 0;
+    params.append('action', action);
 
-    let errorCount = 0;
-
-
-    /*
-      We use the existing addWorkout API.
-
-      Each Excel row becomes one WorkoutData row.
-
-      The existing Apps Script automatically:
-      - adds a new row if it doesn't exist
-      - updates it if the same Username + Week + Day + Exercise exists
-    */
-
-
-    for (
-      let i = 0;
-      i < currentWorkoutData.length;
-      i++
-    ) {
-
-      const row =
-        currentWorkoutData[i];
-
-
-      const result =
-        await callApi(
-          'addWorkout',
-          {
-
-            username:
-              username,
-
-            week:
-              row.week,
-
-            day:
-              row.day,
-
-            major:
-              row.major,
-
-            exercise:
-              row.eng,
-
-            arabic:
-              row.arb,
-
-            muscle:
-              row.muscle,
-
-            sets:
-              row.sets,
-
-            reps:
-              row.reps,
-
-            rest:
-              row.rest
-
-          }
-        );
-
-
-      if (
-        result &&
-        result.status === 'success'
-      ) {
-
-        successCount++;
-
-      } else {
-
-        errorCount++;
-
-        console.error(
-          'Upload failed:',
-          row,
-          result
-        );
-
+    // Add all data parameters
+    Object.keys(data).forEach(key => {
+      if (data[key] !== undefined && data[key] !== null) {
+        params.append(key, data[key]);
       }
+    });
 
+    // Final URL
+    const url = baseUrl + '?' + params.toString();
 
-      /*
-        Update progress every 5 rows.
-      */
+    console.log('API Request:', url);
 
-      if (
-        (i + 1) % 5 === 0 ||
-        i === total - 1
-      ) {
+    // GET request - NO POST
+    // NO Content-Type header
+    // Therefore NO CORS preflight request
+    const response = await fetch(url, {
+      method: 'GET'
+    });
 
-        showMessage(
-          'uploadMessage',
-          `Uploading... ${i + 1} / ${total}`,
-          'info'
-        );
-
-      }
-
+    if (!response.ok) {
+      throw new Error(
+        'HTTP Error ' + response.status + ' - ' + response.statusText
+      );
     }
 
+    const result = await response.json();
 
-    if (
-      errorCount === 0
-    ) {
+    console.log('API Response:', result);
 
-      showMessage(
-        'uploadMessage',
-        `✅ Successfully uploaded ${successCount} workout rows for ${username}.`,
-        'success'
-      );
+    return result;
 
-    } else {
-
-      showMessage(
-        'uploadMessage',
-        `⚠️ Upload completed. Success: ${successCount}. Failed: ${errorCount}.`,
-        'error'
-      );
-
-    }
-
-
-  } catch(error) {
-
-    console.error(
-      error
-    );
-
+  } catch (error) {
+    console.error('API Error:', error);
 
     showMessage(
-      'uploadMessage',
-      '❌ Upload error: ' +
-      error.message,
+      'addMessage',
+      '❌ Error: ' + error.message,
       'error'
     );
 
+    return null;
   }
-
 }
 
 
-/* ============================================================
-   CLEAR
-============================================================ */
 
-function clearAll() {
-
-  currentWorkoutData = [];
-
-  currentPipeline = [];
-
-
-  document
-    .getElementById(
-      'excelFile'
-    )
-    .value = '';
-
-
-  document
-    .getElementById(
-      'username'
-    )
-    .value = '';
-
-
-  document
-    .getElementById(
-      'pipelineContent'
-    )
-    .innerHTML =
-      '<p style="color:#6b7280;">Load an Excel file to see the roadmap.</p>';
-
-
-  document
-    .getElementById(
-      'previewContent'
-    )
-    .innerHTML =
-      '<p style="color:#6b7280;">Workout preview will appear here.</p>';
-
-
-  document
-    .getElementById(
-      'excelMessage'
-    )
-    .style.display =
-      'none';
-
-
-  document
-    .getElementById(
-      'uploadMessage'
-    )
-    .style.display =
-      'none';
-
+// ============================================================
+// TEST CONNECTION
+// ============================================================
+async function testConnection() {
+  const url = document.getElementById('apiUrl').value.trim();
+  if (!url) {
+    showStatus('Please enter your Web App URL', 'error');
+    return;
+  }
+  
+  showStatus('🔄 Testing connection...', 'info');
+  
+  try {
+    const result = await callApi('test');
+    if (result && result.status === 'success') {
+      showStatus('✅ Connection successful! API is working correctly.', 'success');
+    } else {
+      showStatus('⚠️ API returned: ' + (result?.message || 'Unknown response'), 'warning');
+    }
+  } catch (error) {
+    showStatus('❌ Connection failed: ' + error.message, 'error');
+  }
 }
 
-
-/* ============================================================
-   HTML ESCAPE
-============================================================ */
-
-function escapeHtml(
-  value
-) {
-
-  return String(
-    value || ''
-  )
-  .replace(
-    /&/g,
-    '&amp;'
-  )
-  .replace(
-    /</g,
-    '&lt;'
-  )
-  .replace(
-    />/g,
-    '&gt;'
-  )
-  .replace(
-    /"/g,
-    '&quot;'
-  )
-  .replace(
-    /'/g,
-    '&#039;'
-  );
-
+// ============================================================
+// LOAD USERS
+// ============================================================
+async function loadUsers() {
+  showStatus('🔄 Loading users...', 'info');
+  
+  const result = await callApi('getUsers');
+  if (result && result.status === 'success') {
+    const userList = document.getElementById('userList');
+    const userSuggestions = document.getElementById('userSuggestions');
+    const viewUserSuggestions = document.getElementById('viewUserSuggestions');
+    
+    if (result.users && result.users.length > 0) {
+      userList.innerHTML = `
+        <strong>👥 Users (${result.users.length}):</strong><br>
+        ${result.users.map(u => 
+          `<span class="tag">${u}</span>`
+        ).join(' ')}
+      `;
+      
+      userSuggestions.innerHTML = result.users.map(u => 
+        `<option value="${u}">`
+      ).join('');
+      
+      viewUserSuggestions.innerHTML = result.users.map(u => 
+        `<option value="${u}">`
+      ).join('');
+      
+      showStatus(`✅ Loaded ${result.users.length} users`, 'success');
+    } else {
+      userList.innerHTML = '<p style="color:#6b7280;">No users found. Add your first workout!</p>';
+      showStatus('ℹ️ No users found', 'info');
+    }
+  }
 }
 
-
-/* ============================================================
-   MESSAGE
-============================================================ */
-
-function showMessage(
-  elementId,
-  text,
-  type
-) {
-
-  const el =
-    document.getElementById(
-      elementId
-    );
-
-
-  el.textContent =
-    text;
-
-
-  el.className =
-    'message ' +
-    type;
-
-
-  el.style.display =
-    'block';
-
+// ============================================================
+// ADD/UPDATE WORKOUT
+// ============================================================
+async function addWorkout() {
+  const data = {
+    username: document.getElementById('username').value.trim(),
+    week: document.getElementById('week').value.trim(),
+    day: document.getElementById('day').value.trim(),
+    major: document.getElementById('major').value.trim(),
+    exercise: document.getElementById('exercise').value.trim(),
+    arabic: document.getElementById('arabic').value.trim(),
+    muscle: document.getElementById('muscle').value.trim(),
+    sets: document.getElementById('sets').value.trim(),
+    reps: document.getElementById('reps').value.trim(),
+    rest: document.getElementById('rest').value.trim()
+  };
+  
+  if (!data.username || !data.week || !data.day || !data.exercise) {
+    showStatus('Please fill in Username, Week, Day, and Exercise', 'error');
+    return;
+  }
+  
+  showStatus('🔄 Saving workout...', 'info');
+  
+  const result = await callApi('addWorkout', data);
+  if (result && result.status === 'success') {
+    showStatus('✅ ' + result.message, 'success');
+    loadUsers();
+    const viewUser = document.getElementById('viewUsername').value.trim();
+    if (viewUser === data.username) {
+      viewWorkout();
+    }
+  }
 }
 
+// ============================================================
+// DELETE WORKOUT
+// ============================================================
+async function deleteWorkout() {
+  const data = {
+    username: document.getElementById('username').value.trim(),
+    week: document.getElementById('week').value.trim(),
+    day: document.getElementById('day').value.trim(),
+    exercise: document.getElementById('exercise').value.trim()
+  };
+  
+  if (!data.username || !data.week || !data.day || !data.exercise) {
+    showStatus('Please fill in Username, Week, Day, and Exercise to delete', 'error');
+    return;
+  }
+  
+  if (!confirm(`Delete "${data.exercise}" for ${data.username}?`)) return;
+  
+  showStatus('🔄 Deleting workout...', 'info');
+  
+  const result = await callApi('deleteWorkout', data);
+  if (result && result.status === 'success') {
+    showStatus('✅ ' + result.message, 'success');
+    loadUsers();
+    const viewUser = document.getElementById('viewUsername').value.trim();
+    if (viewUser === data.username) {
+      viewWorkout();
+    }
+  }
+}
+
+// ============================================================
+// VIEW WORKOUT
+// ============================================================
+async function viewWorkout() {
+  const username = document.getElementById('viewUsername').value.trim();
+  if (!username) {
+    showStatus('Please enter a username', 'error');
+    return;
+  }
+  
+  showStatus('🔄 Loading workout for ' + username + '...', 'info');
+  
+  const result = await callApi('getWorkoutData', { username });
+  if (result && result.status === 'success') {
+    const container = document.getElementById('viewContent');
+    
+    if (!result.sections || result.sections.length === 0) {
+      container.innerHTML = '<p style="color:#6b7280;padding:20px;">No workout data found for this user</p>';
+      showStatus('ℹ️ No workouts found for ' + username, 'info');
+      return;
+    }
+    
+    let html = `<div style="margin-bottom:12px;font-weight:bold;color:#1e40af;">📋 ${result.sections.length} days of workouts</div>`;
+    html += '<div class="table-container"><table>';
+    html += '<tr><th>Week</th><th>Day</th><th>Major</th><th>Exercise</th><th>Arabic</th><th>Muscle</th><th>Sets</th><th>Reps</th><th>Rest</th></tr>';
+    
+    result.sections.forEach(section => {
+      section.exercises.forEach(ex => {
+        html += `<tr>
+          <td>${ex.week || ''}</td>
+          <td><strong>${section.title}</strong></td>
+          <td>${ex.major || ''}</td>
+          <td>${ex.eng}</td>
+          <td>${ex.arb || ''}</td>
+          <td>${ex.muscle || ''}</td>
+          <td>${ex.sets || ''}</td>
+          <td>${ex.reps || ''}</td>
+          <td>${ex.rest || ''}</td>
+        </tr>`;
+      });
+    });
+    
+    html += '</table></div>';
+    container.innerHTML = html;
+    
+    showStatus(`✅ Loaded workout plan for ${username} (${result.sections.length} days)`, 'success');
+  }
+}
+
+// ============================================================
+// REFRESH VIEW
+// ============================================================
+function refreshView() {
+  const username = document.getElementById('viewUsername').value.trim();
+  if (username) {
+    viewWorkout();
+  } else {
+    showStatus('Please enter a username first', 'warning');
+  }
+}
+
+// ============================================================
+// CLEAR FORM
+// ============================================================
+function clearForm() {
+  document.getElementById('username').value = '';
+  document.getElementById('week').value = '';
+  document.getElementById('day').value = '';
+  document.getElementById('major').value = '';
+  document.getElementById('exercise').value = '';
+  document.getElementById('arabic').value = '';
+  document.getElementById('muscle').value = '';
+  document.getElementById('sets').value = '';
+  document.getElementById('reps').value = '';
+  document.getElementById('rest').value = '';
+  showStatus('🔄 Form cleared', 'info');
+}
+
+// ============================================================
+// SHOW STATUS
+// ============================================================
+function showStatus(text, type = 'info') {
+  const statusBar = document.getElementById('addMessage');
+  statusBar.textContent = text;
+  statusBar.className = 'message ' + type;
+  statusBar.style.display = 'block';
+  
+  if (type === 'success' || type === 'info') {
+    setTimeout(() => {
+      if (statusBar.textContent === text) {
+        statusBar.style.display = 'none';
+      }
+    }, 8000);
+  }
+}
+
+// ============================================================
+// KEYBOARD SHORTCUTS
+// ============================================================
+document.addEventListener('keydown', function(e) {
+  if (e.ctrlKey && e.key === 'Enter') {
+    e.preventDefault();
+    addWorkout();
+  }
+});
+
+// ============================================================
+// INIT
+// ============================================================
+window.onload = function() {
+  if (document.getElementById('apiUrl').value.trim()) {
+    showStatus('⚡ Ready. Click "Load Users" or enter a username to view.', 'info');
+    setTimeout(() => loadUsers(), 500);
+  } else {
+    showStatus('⚡ Enter your Web App URL and click "Load Users"', 'info');
+  }
+};
 </script>
 
 </body>
 </html>
-```
