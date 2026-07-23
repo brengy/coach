@@ -728,46 +728,76 @@ function collectExercises(rows, startIdx, endIdx, columnMap) {
 // ============================================================
 // PARSE ROADMAP
 // ============================================================
+// ============================================================
+// PARSE ROADMAP - FIXED
+// ============================================================
 function parseRoadmapSmart(rows, majorSections) {
   const output = [];
   
-  // Find header row
+  console.log('Parsing roadmap with rows:', rows.length);
+  
+  // Find header row - look for row containing "الأسبوع" AND "اليوم"
   let headerIndex = -1;
   for (let i = 0; i < rows.length; i++) {
     const row = rows[i];
-    if (row.some(cell => String(cell || '').trim() === 'الأسبوع')) {
+    const rowText = row.map(cell => String(cell || '').trim()).join(' ');
+    // Look for both "الأسبوع" and "اليوم" to be sure it's the header
+    if (rowText.includes('الأسبوع') && rowText.includes('اليوم')) {
       headerIndex = i;
+      console.log('Found header at row:', i, rowText);
       break;
     }
   }
 
   if (headerIndex === -1) {
-    console.error('Roadmap header not found');
+    console.error('Roadmap header not found. Rows:', rows);
     return output;
   }
 
-  // Parse each week row
+  // Parse each week row (starting after header)
   for (let i = headerIndex + 1; i < rows.length; i++) {
     const row = rows[i];
+    
+    // Get week name from first column
     const week = String(row[0] || '').trim();
-    if (!week) continue;
+    console.log('Processing row:', i, 'Week:', week);
+    
+    if (!week) {
+      console.log('Skipping empty week row');
+      continue;
+    }
 
-    // Check days 1-7
+    // Check days 1-7 (columns 1-7)
     for (let dayIndex = 1; dayIndex <= 7; dayIndex++) {
+      // Make sure we have data in this column
+      if (row.length <= dayIndex) continue;
+      
       const dayName = String(row[dayIndex] || '').trim();
       if (!dayName) continue;
 
+      console.log('  Day ' + dayIndex + ':', dayName);
+
       // Skip rest days
       if (dayName.includes('راحة') || dayName.toLowerCase().includes('rest')) {
+        console.log('  -> Rest day, skipping');
         continue;
       }
 
       // Detect Major from day name
       const major = detectMajorFromText(dayName);
-      if (!major || !majorSections[major] || majorSections[major].length === 0) {
-        console.warn('No exercises found for major:', major, 'day:', dayName);
+      console.log('  -> Detected major:', major);
+      
+      if (!major) {
+        console.log('  -> No major detected');
         continue;
       }
+      
+      if (!majorSections[major] || majorSections[major].length === 0) {
+        console.log('  -> No exercises found for major:', major);
+        continue;
+      }
+
+      console.log('  -> Adding ' + majorSections[major].length + ' exercises for ' + major);
 
       // Add all exercises for this major to this day
       majorSections[major].forEach(exercise => {
@@ -786,9 +816,9 @@ function parseRoadmapSmart(rows, majorSections) {
     }
   }
 
+  console.log('Total roadmap entries:', output.length);
   return output;
 }
-
 // ============================================================
 // DETECT MAJOR FROM TEXT
 // ============================================================
